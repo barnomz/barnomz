@@ -1,9 +1,11 @@
+import { ReviewLikeCreateNestedManyWithoutUsersInput } from "./ReviewLikeCreateNestedManyWithoutUsersInput";
 import { InputJsonValue } from "../../types";
+import { ScheduleCreateNestedManyWithoutUsersInput } from "./ScheduleCreateNestedManyWithoutUsersInput";
 
 export type UserCreateInput = {
-  firstName?: string | null;
-  lastName?: string | null;
-  password: string;
+  password?: string | null;
+  reviewLikes?: ReviewLikeCreateNestedManyWithoutUsersInput;
   roles: InputJsonValue;
+  schedules?: ScheduleCreateNestedManyWithoutUsersInput;
   username: string;
 };

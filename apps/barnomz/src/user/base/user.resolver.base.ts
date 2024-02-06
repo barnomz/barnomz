@@ -26,6 +26,10 @@ import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 import { CreateUserArgs } from "./CreateUserArgs";
 import { UpdateUserArgs } from "./UpdateUserArgs";
 import { DeleteUserArgs } from "./DeleteUserArgs";
+import { ReviewLikeFindManyArgs } from "../../reviewLike/base/ReviewLikeFindManyArgs";
+import { ReviewLike } from "../../reviewLike/base/ReviewLike";
+import { ScheduleFindManyArgs } from "../../schedule/base/ScheduleFindManyArgs";
+import { Schedule } from "../../schedule/base/Schedule";
 import { UserService } from "../user.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => User)
@@ -130,5 +134,45 @@ export class UserResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [ReviewLike], { name: "reviewLikes" })
+  @nestAccessControl.UseRoles({
+    resource: "ReviewLike",
+    action: "read",
+    possession: "any",
+  })
+  async findReviewLikes(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: ReviewLikeFindManyArgs
+  ): Promise<ReviewLike[]> {
+    const results = await this.service.findReviewLikes(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Schedule], { name: "schedules" })
+  @nestAccessControl.UseRoles({
+    resource: "Schedule",
+    action: "read",
+    possession: "any",
+  })
+  async findSchedules(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: ScheduleFindManyArgs
+  ): Promise<Schedule[]> {
+    const results = await this.service.findSchedules(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 }

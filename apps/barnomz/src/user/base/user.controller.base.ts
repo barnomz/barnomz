@@ -26,6 +26,12 @@ import { User } from "./User";
 import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateInput } from "./UserUpdateInput";
+import { ReviewLikeFindManyArgs } from "../../reviewLike/base/ReviewLikeFindManyArgs";
+import { ReviewLike } from "../../reviewLike/base/ReviewLike";
+import { ReviewLikeWhereUniqueInput } from "../../reviewLike/base/ReviewLikeWhereUniqueInput";
+import { ScheduleFindManyArgs } from "../../schedule/base/ScheduleFindManyArgs";
+import { Schedule } from "../../schedule/base/Schedule";
+import { ScheduleWhereUniqueInput } from "../../schedule/base/ScheduleWhereUniqueInput";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
@@ -50,9 +56,7 @@ export class UserControllerBase {
       data: data,
       select: {
         createdAt: true,
-        firstName: true,
         id: true,
-        lastName: true,
         roles: true,
         updatedAt: true,
         username: true,
@@ -78,9 +82,7 @@ export class UserControllerBase {
       ...args,
       select: {
         createdAt: true,
-        firstName: true,
         id: true,
-        lastName: true,
         roles: true,
         updatedAt: true,
         username: true,
@@ -107,9 +109,7 @@ export class UserControllerBase {
       where: params,
       select: {
         createdAt: true,
-        firstName: true,
         id: true,
-        lastName: true,
         roles: true,
         updatedAt: true,
         username: true,
@@ -145,9 +145,7 @@ export class UserControllerBase {
         data: data,
         select: {
           createdAt: true,
-          firstName: true,
           id: true,
-          lastName: true,
           roles: true,
           updatedAt: true,
           username: true,
@@ -182,9 +180,7 @@ export class UserControllerBase {
         where: params,
         select: {
           createdAt: true,
-          firstName: true,
           id: true,
-          lastName: true,
           roles: true,
           updatedAt: true,
           username: true,
@@ -198,5 +194,216 @@ export class UserControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/reviewLikes")
+  @ApiNestedQuery(ReviewLikeFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ReviewLike",
+    action: "read",
+    possession: "any",
+  })
+  async findReviewLikes(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<ReviewLike[]> {
+    const query = plainToClass(ReviewLikeFindManyArgs, request.query);
+    const results = await this.service.findReviewLikes(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+        id: true,
+        like: true,
+
+        review: {
+          select: {
+            id: true,
+          },
+        },
+
+        updatedAt: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/reviewLikes")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async connectReviewLikes(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: ReviewLikeWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      reviewLikes: {
+        connect: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/reviewLikes")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async updateReviewLikes(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: ReviewLikeWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      reviewLikes: {
+        set: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/reviewLikes")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectReviewLikes(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: ReviewLikeWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      reviewLikes: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/schedules")
+  @ApiNestedQuery(ScheduleFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Schedule",
+    action: "read",
+    possession: "any",
+  })
+  async findSchedules(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<Schedule[]> {
+    const query = plainToClass(ScheduleFindManyArgs, request.query);
+    const results = await this.service.findSchedules(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+        id: true,
+        name: true,
+        updatedAt: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/schedules")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async connectSchedules(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: ScheduleWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      schedules: {
+        connect: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/schedules")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async updateSchedules(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: ScheduleWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      schedules: {
+        set: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/schedules")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectSchedules(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: ScheduleWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      schedules: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

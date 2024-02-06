@@ -1,5 +1,16 @@
 import { Module } from "@nestjs/common";
+import { CacheModule } from "@nestjs/cache-manager";
+import { redisStore } from "cache-manager-ioredis-yet";
 import { UserModule } from "./user/user.module";
+import { DepartmentModule } from "./department/department.module";
+import { LecturerModule } from "./lecturer/lecturer.module";
+import { CourseModule } from "./course/course.module";
+import { CourseLecturerModule } from "./courseLecturer/courseLecturer.module";
+import { CourseSessionModule } from "./courseSession/courseSession.module";
+import { ScheduleModule } from "./schedule/schedule.module";
+import { ScheduleCourseModule } from "./scheduleCourse/scheduleCourse.module";
+import { ReviewModule } from "./review/review.module";
+import { ReviewLikeModule } from "./reviewLike/reviewLike.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
@@ -18,6 +29,15 @@ import { AuthModule } from "./auth/auth.module";
     ACLModule,
     AuthModule,
     UserModule,
+    DepartmentModule,
+    LecturerModule,
+    CourseModule,
+    CourseLecturerModule,
+    CourseSessionModule,
+    ScheduleModule,
+    ScheduleCourseModule,
+    ReviewModule,
+    ReviewLikeModule,
     HealthModule,
     PrismaModule,
     SecretsManagerModule,
@@ -39,6 +59,30 @@ import { AuthModule } from "./auth/auth.module";
       },
       inject: [ConfigService],
       imports: [ConfigModule],
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+
+      useFactory: async (configService: ConfigService) => {
+        const host = configService.get("REDIS_HOST");
+        const port = configService.get("REDIS_PORT");
+        const username = configService.get("REDIS_USERNAME");
+        const password = configService.get("REDIS_PASSWORD");
+        const ttl = configService.get("REDIS_TTL", 5000);
+
+        return {
+          store: await redisStore({
+            host: host,
+            port: port,
+            username: username,
+            password: password,
+            ttl: ttl,
+          }),
+        };
+      },
+
+      inject: [ConfigService],
     }),
   ],
   providers: [],

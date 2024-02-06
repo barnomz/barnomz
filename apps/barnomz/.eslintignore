@@ -1,0 +1,7 @@
+# Add further files to ignore here as needed
+
+node_modules/
+dist/
+prisma/migrations/
+package-lock.json
+coverage/

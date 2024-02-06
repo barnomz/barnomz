@@ -1,5 +1,12 @@
 version: "3"
 services:
+  redis:
+    container_name: ${REDIS_HOST}
+    image: redis:7
+    ports:
+      - ${REDIS_PORT}:6379
+    volumes:
+      - redis:/data
   db:
     image: postgres:12
     ports:
@@ -10,4 +17,6 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 volumes:
+  redis:
+    driver: local
   postgres: ~

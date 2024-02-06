@@ -11,11 +11,13 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString, IsOptional } from "class-validator";
+import { IsDate, IsString, ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
+import { ReviewLike } from "../../reviewLike/base/ReviewLike";
 import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { JsonValue } from "type-fest";
+import { Schedule } from "../../schedule/base/Schedule";
 
 @ObjectType()
 class User {
@@ -28,17 +30,6 @@ class User {
   createdAt!: Date;
 
   @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  firstName!: string | null;
-
-  @ApiProperty({
     required: true,
     type: String,
   })
@@ -48,14 +39,12 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: String,
+    type: () => [ReviewLike],
   })
-  @IsString()
+  @ValidateNested()
+  @Type(() => ReviewLike)
   @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  lastName!: string | null;
+  reviewLikes?: Array<ReviewLike>;
 
   @ApiProperty({
     required: true,
@@ -63,6 +52,15 @@ class User {
   @IsJSONValue()
   @Field(() => GraphQLJSON)
   roles!: JsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Schedule],
+  })
+  @ValidateNested()
+  @Type(() => Schedule)
+  @IsOptional()
+  schedules?: Array<Schedule>;
 
   @ApiProperty({
     required: true,

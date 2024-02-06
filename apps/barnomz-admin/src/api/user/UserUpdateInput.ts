@@ -1,9 +1,11 @@
+import { ReviewLikeUpdateManyWithoutUsersInput } from "./ReviewLikeUpdateManyWithoutUsersInput";
 import { InputJsonValue } from "../../types";
+import { ScheduleUpdateManyWithoutUsersInput } from "./ScheduleUpdateManyWithoutUsersInput";
 
 export type UserUpdateInput = {
-  firstName?: string | null;
-  lastName?: string | null;
-  password?: string;
+  password?: string | null;
+  reviewLikes?: ReviewLikeUpdateManyWithoutUsersInput;
   roles?: InputJsonValue;
+  schedules?: ScheduleUpdateManyWithoutUsersInput;
   username?: string;
 };

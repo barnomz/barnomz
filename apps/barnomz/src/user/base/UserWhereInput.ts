@@ -11,24 +11,14 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringNullableFilter } from "../../util/StringNullableFilter";
-import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
 import { StringFilter } from "../../util/StringFilter";
+import { Type } from "class-transformer";
+import { IsOptional, ValidateNested } from "class-validator";
+import { ReviewLikeListRelationFilter } from "../../reviewLike/base/ReviewLikeListRelationFilter";
+import { ScheduleListRelationFilter } from "../../schedule/base/ScheduleListRelationFilter";
 
 @InputType()
 class UserWhereInput {
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
-  })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  @Field(() => StringNullableFilter, {
-    nullable: true,
-  })
-  firstName?: StringNullableFilter;
-
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -42,14 +32,27 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
-    type: StringNullableFilter,
+    type: () => ReviewLikeListRelationFilter,
   })
-  @Type(() => StringNullableFilter)
+  @ValidateNested()
+  @Type(() => ReviewLikeListRelationFilter)
   @IsOptional()
-  @Field(() => StringNullableFilter, {
+  @Field(() => ReviewLikeListRelationFilter, {
     nullable: true,
   })
-  lastName?: StringNullableFilter;
+  reviewLikes?: ReviewLikeListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => ScheduleListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => ScheduleListRelationFilter)
+  @IsOptional()
+  @Field(() => ScheduleListRelationFilter, {
+    nullable: true,
+  })
+  schedules?: ScheduleListRelationFilter;
 
   @ApiProperty({
     required: false,

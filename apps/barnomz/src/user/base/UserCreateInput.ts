@@ -11,10 +11,13 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional } from "class-validator";
+import { IsString, IsOptional, ValidateNested } from "class-validator";
+import { ReviewLikeCreateNestedManyWithoutUsersInput } from "./ReviewLikeCreateNestedManyWithoutUsersInput";
+import { Type } from "class-transformer";
 import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
+import { ScheduleCreateNestedManyWithoutUsersInput } from "./ScheduleCreateNestedManyWithoutUsersInput";
 
 @InputType()
 class UserCreateInput {
@@ -27,26 +30,19 @@ class UserCreateInput {
   @Field(() => String, {
     nullable: true,
   })
-  firstName?: string | null;
+  password?: string | null;
 
   @ApiProperty({
     required: false,
-    type: String,
+    type: () => ReviewLikeCreateNestedManyWithoutUsersInput,
   })
-  @IsString()
+  @ValidateNested()
+  @Type(() => ReviewLikeCreateNestedManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => String, {
+  @Field(() => ReviewLikeCreateNestedManyWithoutUsersInput, {
     nullable: true,
   })
-  lastName?: string | null;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  password!: string;
+  reviewLikes?: ReviewLikeCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
     required: true,
@@ -54,6 +50,18 @@ class UserCreateInput {
   @IsJSONValue()
   @Field(() => GraphQLJSON)
   roles!: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: () => ScheduleCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => ScheduleCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => ScheduleCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  schedules?: ScheduleCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
     required: true,

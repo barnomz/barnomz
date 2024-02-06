@@ -13,7 +13,7 @@ services:
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     depends_on:
-      - migrate
+      - redis
     restart: on-failure
   migrate:
     build:
@@ -28,6 +28,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  redis:
+    container_name: ${REDIS_HOST}
+    image: redis:7
+    ports:
+      - ${REDIS_PORT}:6379
+    volumes:
+      - redis:/data
   db:
     image: postgres:12
     ports:
@@ -46,4 +53,6 @@ services:
       interval: 10s
       retries: 10
 volumes:
+  redis:
+    driver: local
   postgres: ~
