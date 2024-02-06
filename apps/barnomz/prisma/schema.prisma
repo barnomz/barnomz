@@ -1,0 +1,142 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt   DateTime     @default(now())
+  id          String       @id @default(cuid())
+  password    String?
+  reviewLikes ReviewLike[]
+  roles       Json
+  schedules   Schedule[]
+  updatedAt   DateTime     @updatedAt
+  username    String       @unique
+}
+
+model Department {
+  code      String     @unique
+  courses   Course[]
+  createdAt DateTime   @default(now())
+  id        String     @id @default(cuid())
+  lecturers Lecturer[]
+  name      String
+  updatedAt DateTime   @updatedAt
+}
+
+model Lecturer {
+  courseLecturers      CourseLecturer[]
+  courses              Course[]
+  createdAt            DateTime         @default(now())
+  department           Department       @relation(fields: [departmentId], references: [id])
+  departmentId         String
+  examDifficultyRating Float?
+  fullName             String
+  id                   String           @id @default(cuid())
+  moralityRating       Float?
+  numberOfReviews      Int?
+  pressureRating       Float?
+  rating               Float?
+  reviews              Review[]
+  teachingRating       Float?
+  updatedAt            DateTime         @updatedAt
+}
+
+model Course {
+  capacity            Int
+  code                String           @unique
+  courseLecturers     CourseLecturer[]
+  courseSessions      CourseSession[]
+  createdAt           DateTime         @default(now())
+  credit              Int
+  department          Department       @relation(fields: [departmentId], references: [id])
+  departmentId        String
+  examDate            DateTime
+  grade               EnumCourseGrade?
+  group               Int
+  id                  String           @id @default(cuid())
+  info                String?
+  lecturer            Lecturer[]
+  name                String
+  numberOfEnrolled    Int?
+  numberOfPetitioners Int?
+  scheduleCourses     ScheduleCourse[]
+  updatedAt           DateTime         @updatedAt
+}
+
+model CourseLecturer {
+  course     Course   @relation(fields: [courseId], references: [id])
+  courseId   String
+  createdAt  DateTime @default(now())
+  id         String   @id @default(cuid())
+  lecturer   Lecturer @relation(fields: [lecturerId], references: [id])
+  lecturerId String
+  updatedAt  DateTime @updatedAt
+}
+
+model CourseSession {
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  String
+  createdAt DateTime @default(now())
+  dayOfWeek Int
+  endTime   String?
+  id        String   @id @default(cuid())
+  startTime String?
+  updatedAt DateTime @updatedAt
+}
+
+model Schedule {
+  createdAt       DateTime         @default(now())
+  id              String           @id @default(cuid())
+  name            String
+  scheduleCourses ScheduleCourse[]
+  updatedAt       DateTime         @updatedAt
+  user            User             @relation(fields: [userId], references: [id])
+  userId          String
+}
+
+model ScheduleCourse {
+  course     Course   @relation(fields: [courseId], references: [id])
+  courseId   String
+  createdAt  DateTime @default(now())
+  id         String   @id @default(cuid())
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId String
+  updatedAt  DateTime @updatedAt
+}
+
+model Review {
+  createdAt            DateTime     @default(now())
+  examDifficultyRating Int?
+  id                   String       @id @default(cuid())
+  lecturer             Lecturer     @relation(fields: [lecturerId], references: [id])
+  lecturerId           String
+  moralityRating       Int?
+  pressureRating       Int?
+  rating               Float?
+  reviewLikes          ReviewLike[]
+  teachingRating       Int?
+  text                 String?
+  updatedAt            DateTime     @updatedAt
+}
+
+model ReviewLike {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  like      Boolean?
+  review    Review?  @relation(fields: [reviewId], references: [id])
+  reviewId  String?
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+enum EnumCourseGrade {
+  BSC
+  MSC
+  PhD
+}
