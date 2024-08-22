@@ -26,6 +26,7 @@ export const api = createTRPCNext<AppRouter>({
        *
        * @see https://trpc.io/docs/links
        */
+      ssr: true,
       links: [
         loggerLink({
           enabled: (opts) =>

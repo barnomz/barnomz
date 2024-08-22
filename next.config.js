@@ -18,6 +18,7 @@ const config = {
     defaultLocale: "en",
   },
   transpilePackages: ["geist"],
+  output: "standalone",
 };
 
 export default config;

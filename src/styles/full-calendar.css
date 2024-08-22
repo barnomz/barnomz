@@ -1,0 +1,71 @@
+:root {
+  --fc-small-font-size: 0.85em;
+  --fc-page-bg-color: #000;
+  --fc-neutral-bg-color: rgba(208, 208, 208, 0.3);
+  --fc-neutral-text-color: #fff;
+  --fc-border-color: #10497F;
+
+  --fc-event-bg-color: transparent;
+  --fc-event-border-color: transparent;
+  --fc-event-text-color: #fff;
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+
+  --fc-more-link-bg-color: #d0d0d0;
+  --fc-more-link-text-color: inherit;
+
+  --fc-event-resizer-thickness: 8px;
+  --fc-event-resizer-dot-total-width: 8px;
+  --fc-event-resizer-dot-border-width: 1px;
+
+  --fc-non-business-color: rgba(215, 215, 215, 0.3);
+  --fc-bg-event-color: rgb(143, 223, 130);
+  --fc-bg-event-opacity: 0.3;
+  --fc-highlight-color: rgba(188, 232, 241, 0.3);
+  --fc-today-bg-color: transparent;
+  --fc-now-indicator-color: red;
+}
+
+.fc-scroller {
+  height: auto !important;
+}
+
+.fc-head .fc-widget-header {
+  margin-right: 0 !important;
+}
+
+.fc-scroller {
+  overflow: visible !important;
+}
+
+.fc-col-header, .fc-timegrid-body , .fc-timegrid-slots > table, .fc-timegrid-cols > table {
+  min-width: 960px !important;
+  max-width: 1280px !important;
+}
+
+.fc-timegrid-event-harness-inset .fc-timegrid-event, .fc-timegrid-event.fc-event-mirror, .fc-timegrid-more-link {
+  box-shadow: none !important;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border: none !important;
+}
+
+.fc-theme-standard td:first-child, .fc-theme-standard th:first-child {
+  border: none !important;
+}
+
+.fc-theme-standard th:nth-child(2) {
+  border-right: none !important;
+}
+
+.fc-theme-standard th:first-child {
+  border-top: none !important;
+}
+
+.fc-timegrid-slot-label-frame.fc-scrollgrid-shrink-frame {
+  margin-top: -32px;
+}
+
+.fc .fc-scrollgrid-section-body table, .fc .fc-scrollgrid-section-footer table {
+  border-bottom-style: solid;
+}
