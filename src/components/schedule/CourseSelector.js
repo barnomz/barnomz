@@ -76,6 +76,7 @@ export default function CourseSelector({
   const addCourse = (course) => {
     setCoursesOfSchedule((prev) => {
       const courseInSchedule = prev.find((c) => c.id === course.id);
+      if (!courseInSchedule) return prev;
       delete courseInSchedule.mode;
       return [...prev, { ...courseInSchedule }];
     });
