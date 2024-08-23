@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
     signOut: "/auth/logout",
   },
   callbacks: {
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       return {
         ...session,
         user: {
