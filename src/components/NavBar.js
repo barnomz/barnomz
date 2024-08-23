@@ -1,4 +1,3 @@
-import Image from "next/image";
 // import logoSvg from "../../public/images/barnomz-horizontal-logo.svg";
 import BBtn from "@/components/dls/BBtn";
 import { signOut, useSession } from "next-auth/react";
@@ -40,7 +39,7 @@ export default function NavBar() {
   );
 
   return (
-    <div className="bg-primary/50 sticky flex h-[3.75rem] w-full items-center justify-between px-[1.5rem] py-[0.75rem] backdrop-blur">
+    <div className="sticky flex h-[3.75rem] w-full items-center justify-between bg-primary/50 px-[1.5rem] py-[0.75rem] backdrop-blur">
       <Link href="/">
         {/*<Image*/}
         {/*  src={logoSvg}*/}
@@ -49,6 +48,7 @@ export default function NavBar() {
         {/*  height={36}*/}
         {/*  priority*/}
         {/*/>*/}
+        <img src="/images/barnomz-horizontal-logo.svg" alt="barnomz logo" />
       </Link>
       {isLoggedIn && <NavBarMenu />}
       {isLoggedIn ? navBarEndLoggedIn : navBarEndLoggedOut}
