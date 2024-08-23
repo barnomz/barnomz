@@ -95,7 +95,7 @@ export default function Schedule({ courses, currentScheduleId, setSchedules }) {
             slotDuration: "01:00:00",
             duration: { days: 6 },
             slotLabelContent: ({ date }) => (
-              <div className="me-1 ms-2 text-sm font-medium">
+              <div className="me-1 ms-2 mt-1 text-sm font-medium">
                 {convertPersianNumberToEnglish(date.getHours().toString())}
               </div>
             ),
