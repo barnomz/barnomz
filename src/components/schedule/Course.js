@@ -27,7 +27,7 @@ const Course = ({ course, ...props }) => {
         {course.courseCode}-{course.group}
       </span>
       <span className="text-center font-bold">{course.courseName}</span>
-      <span>{course.presentedBy}</span>
+      <span className="text-center">{course.presentedBy}</span>
       {mode === "search" && (
         <BBtn className="h-[2.1875rem]" preIcon={faPlus} iconSize={"sm"}>
           اضافه کردن
