@@ -27,12 +27,19 @@ export const authRouter = createTRPCRouter({
 
       // Create new user
       const hashedPassword = await bcrypt.hash(input.password, 10);
-      return ctx.db.user.create({
+      const createdUser = await ctx.db.user.create({
         data: {
           username: input.username,
           studentNumber: input.studentNumber,
           password: hashedPassword,
         },
       });
+      await ctx.db.schedule.create({
+        data: {
+          userId: createdUser.id,
+          status: "public",
+        },
+      });
+      return createdUser;
     }),
 });
