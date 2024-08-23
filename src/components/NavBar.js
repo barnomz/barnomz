@@ -48,7 +48,11 @@ export default function NavBar() {
         {/*  height={36}*/}
         {/*  priority*/}
         {/*/>*/}
-        <img src="/images/barnomz-horizontal-logo.svg" alt="barnomz logo" />
+        <img
+          src="/images/barnomz-horizontal-logo.svg"
+          alt="barnomz logo"
+          width="100px"
+        />
       </Link>
       {isLoggedIn && <NavBarMenu />}
       {isLoggedIn ? navBarEndLoggedIn : navBarEndLoggedOut}
