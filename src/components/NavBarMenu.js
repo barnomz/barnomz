@@ -45,7 +45,7 @@ export default function NavBarMenu() {
 
   return (
     <Tab.Group defaultIndex={activeNavIndex}>
-      <Tab.List className="flex h-full gap-2">
+      <Tab.List className="flex h-full md:gap-2">
         {navigations.map((nav) => (
           <Tab key={nav.id} as={Fragment} className="h-full">
             {({ selected }) => (
@@ -53,9 +53,9 @@ export default function NavBarMenu() {
                 href={nav.link}
                 className={classNames(
                   "ripple h-full text-sm font-bold",
-                  "hover:bg-primary rounded-t-md px-4 py-2 focus-visible:outline-none",
+                  "rounded-t-md px-4 py-2 hover:bg-primary focus-visible:outline-none",
                   selected
-                    ? "border-secondary border-b-4 border-solid text-white"
+                    ? "border-b-4 border-solid border-secondary text-white"
                     : "text-grey-200 hover:text-white",
                 )}
               >
