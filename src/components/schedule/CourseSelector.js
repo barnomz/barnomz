@@ -109,7 +109,7 @@ export default function CourseSelector({
   };
 
   return (
-    <div className="min-w-[20rem] max-w-[20rem] space-y-4 rounded-xl bg-primary/50 p-4 backdrop-blur">
+    <div className="hidden min-w-[20rem] max-w-[20rem] space-y-4 rounded-xl bg-primary/50 p-4 backdrop-blur md:block">
       <CollegeCombobox
         colleges={colleges}
         selectedCollege={selectedCollege}
