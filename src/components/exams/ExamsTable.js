@@ -6,10 +6,8 @@ export default function ExamsTable({ courses }) {
     const property = course[key];
     if (key !== "finalExamDate") return property;
     if (!property) return "-";
-    console.log("log");
     const jalaliDateTimeString = `${course.finalExamDate} ${course.finalExamTime}`;
     const jDateTime = moment(jalaliDateTimeString, "jYYYY/jMM/jDD HH:mm");
-    const gregorianDate = jDateTime.toDate();
     const formatter = new Intl.DateTimeFormat("fa-IR", {
       year: "numeric",
       month: "long",
@@ -19,7 +17,7 @@ export default function ExamsTable({ courses }) {
       timeZone: "Asia/Tehran",
     });
 
-    return formatter.format(gregorianDate).toString();
+    return formatter.format(new Date(jDateTime)).toString();
   };
 
   const totalCreditSum = courses.reduce(
