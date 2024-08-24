@@ -83,9 +83,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           unitCount: courseData.Units,
           group: courseData.Group,
           finalExamDate: courseData.ExamDate ? courseData.ExamDate : null,
-          finalExamTime: courseData.ExamTime
-            ? new Date(courseData.ExamTime)
-            : null,
+          finalExamTime: courseData.ExamTime ? courseData.ExamTime : null,
           numberOfCapacity: courseData.Capacity,
           numberOfEnrolled: courseData.Registered,
           info: courseData.Info,
@@ -98,9 +96,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           unitCount: courseData.Units,
           group: courseData.Group,
           finalExamDate: courseData.ExamDate ? courseData.ExamDate : null,
-          finalExamTime: courseData.ExamTime
-            ? new Date(courseData.ExamTime)
-            : null,
+          finalExamTime: courseData.ExamTime ? courseData.ExamTime : null,
           daysOfWeek: courseData.DaysOfWeek,
           startTime: courseData.StartTime ? courseData.StartTime : null,
           endTime: courseData.EndTime ? courseData.EndTime : null,
@@ -122,23 +118,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           warning: "",
         },
       });
-
-      // // Step 6: Optionally, you can also handle the sessions (DaysOfWeek, StartTime, EndTime)
-      // for (const dayOfWeek of courseData.DaysOfWeek) {
-      //   await db.classSession.create({
-      //     data: {
-      //       courseId: course.id,
-      //       dayOfWeek: String(dayOfWeek),
-      //       startTime: courseData.StartTime
-      //         ? convertTimeStringToDate(courseData.StartTime)
-      //         : null, // Ensure the proper format
-      //       endTime: courseData.EndTime
-      //         ? convertTimeStringToDate(courseData.EndTime)
-      //         : null, // Ensure the proper format
-      //       locationId: course.locationId, // Modify as necessary if handling classrooms
-      //     },
-      //   });
-      // }
     }
 
     console.log("Database populated successfully");

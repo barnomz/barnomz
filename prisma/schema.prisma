@@ -92,7 +92,7 @@ model Course {
     group                Int
     locationId           Int?
     finalExamDate        String?
-    finalExamTime        DateTime?
+    finalExamTime        String?
     numberOfPetitioners  Int
     numberOfCapacity     Int
     numberOfEnrolled     Int

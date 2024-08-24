@@ -47,7 +47,7 @@ export const examsTableHeaders = [
     value: "استاد",
   },
   {
-    key: "examDate",
+    key: "finalExamDate",
     value: "زمان امتحان",
   },
   // {
