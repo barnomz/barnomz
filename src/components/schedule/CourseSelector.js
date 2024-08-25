@@ -7,6 +7,7 @@ import messages from "@/constants/messages";
 import { useToast } from "@/components/dls/toast/ToastService";
 import { courseMapper } from "@/utils/mappers";
 import { api } from "@/utils/api";
+import Tooltip from "@/components/dls/Tooltip";
 
 export default function CourseSelector({
   colleges,
@@ -24,6 +25,8 @@ export default function CourseSelector({
   const [query, setQuery] = useState("");
   const [coursesOfColleges, setCoursesOfColleges] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState(null);
+  const [tooltipContent, setTooltipContent] = useState(<></>); // Tooltip content state
+  const [tooltipPosition, setTooltipPosition] = useState(null); // Tooltip position state
 
   const totalCreditSum = courses.reduce(
     (sum, { unitCount }) => sum + Number(unitCount),
@@ -115,6 +118,33 @@ export default function CourseSelector({
     });
   };
 
+  const handleMouseEnter = (course, event) => {
+    addCourseAsHover(course);
+    const { top, left, width, height } =
+      event.currentTarget.getBoundingClientRect();
+    setTooltipContent(
+      <>
+        <span className="text-sm font-bold">{`${course.courseName} (${course.group}-${course.courseCode})`}</span>
+        <br />
+        <span>{`استاد: ${course.presentedBy}`}</span>
+        <br />
+        <span>{`ظرفیت: ${course.numberOfCapacity}`}</span>
+        <br />
+        <span>{`تعداد ثبت‌نامی: ${course.numberOfEnrolled}`}</span>
+      </>,
+    );
+    setTooltipPosition({
+      top: top - 120,
+      left: width + 40,
+    });
+  };
+
+  const handleMouseLeave = (course) => {
+    removeCourse(course);
+    setTooltipContent(<></>);
+    setTooltipPosition(null);
+  };
+
   return (
     <div className="hidden min-w-[20rem] max-w-[20rem] space-y-4 rounded-xl bg-primary/50 p-4 backdrop-blur md:block">
       <div className="flex items-center justify-between px-1 text-sm">
@@ -142,9 +172,9 @@ export default function CourseSelector({
           filteredCourses.map((course, i) => (
             <div
               key={i}
-              className="flex cursor-pointer items-center justify-between rounded bg-grey-300/60 px-2 py-1 text-primary-darker transition-all hover:bg-grey-300"
-              onMouseEnter={() => addCourseAsHover(course)}
-              onMouseLeave={() => removeCourse(course)}
+              className="relative flex cursor-pointer items-center justify-between rounded bg-grey-300/60 px-2 py-1 text-primary-darker transition-all hover:bg-grey-300"
+              onMouseEnter={(event) => handleMouseEnter(course, event)}
+              onMouseLeave={() => handleMouseLeave(course)}
               onClick={() => handleAddCourseToSchedule(course)}
             >
               <span>{course.courseName}</span>
@@ -153,6 +183,8 @@ export default function CourseSelector({
           ))
         )}
       </div>
+
+      <Tooltip content={tooltipContent} position={tooltipPosition} />
     </div>
   );
 }
