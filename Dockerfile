@@ -5,7 +5,7 @@ FROM node:20-alpine AS base
 FROM base AS deps
 
 # Install required packages including Python and build tools
-RUN apk add --no-cache libc6-compat openssl python3 make g++
+RUN apk add --no-cache libc6-compat openssl python3 make g++ curl
 
 WORKDIR /app
 
@@ -59,8 +59,20 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+COPY --from=liaracloud/supercronic:v0.1.11 \
+     /usr/local/bin/supercronic /usr/local/bin/supercronic
+
+# Copy the crontab and entrypoint script from local filesystem
+COPY crontab ./crontab
+COPY entrypoint.sh ./entrypoint.sh
+
+# Ensure the entrypoint.sh file is executable
+RUN chmod +x ./entrypoint.sh
+RUN apk add curl
+
 EXPOSE 3000
 ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
 
-# Run migrations and start the server
-CMD ["sh", "-c", "npm run db:migrate && node server.js"]
+# Use the entrypoint script to start Supercronic and your app
+ENTRYPOINT ["/app/entrypoint.sh"]

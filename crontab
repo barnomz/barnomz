@@ -1,0 +1,2 @@
+0 */1 * * * curl -X POST http://localhost:3000/api/admin/populate
+
