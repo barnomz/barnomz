@@ -38,7 +38,7 @@
 }
 
 .fc-col-header, .fc-timegrid-body , .fc-timegrid-slots > table, .fc-timegrid-cols > table {
-  min-width: 960px !important;
+  min-width: 840px !important;
   max-width: 1280px !important;
 }
 
