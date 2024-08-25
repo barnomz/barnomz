@@ -25,8 +25,8 @@ export default function CourseSelector({
   const [query, setQuery] = useState("");
   const [coursesOfColleges, setCoursesOfColleges] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState(null);
-  const [tooltipContent, setTooltipContent] = useState(<></>); // Tooltip content state
-  const [tooltipPosition, setTooltipPosition] = useState(null); // Tooltip position state
+  const [tooltipContent, setTooltipContent] = useState(<></>);
+  const [tooltipPosition, setTooltipPosition] = useState(null);
 
   const totalCreditSum = courses.reduce(
     (sum, { unitCount }) => sum + Number(unitCount),
