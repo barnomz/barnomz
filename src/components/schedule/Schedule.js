@@ -45,7 +45,7 @@ export default function Schedule({ courses, currentScheduleId, setSchedules }) {
       );
 
       toast.open({
-        message: "Course removed successfully.",
+        message: "درس حذف شد.",
         type: "success",
       });
     } catch (error) {

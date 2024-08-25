@@ -7,13 +7,16 @@ import { getServerAuthSession } from "@/server/auth";
 import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 
-export default function ExamsPage({ schedules }) {
+export default function ExamsPage({ initialSchedules }) {
+  const [schedules, setSchedules] = useState(initialSchedules);
   const [courses, setCourses] = useState(schedules[0]?.courses || []);
   const [currentScheduleId, setCurrentScheduleId] = useState(schedules[0]?.id);
 
   useEffect(() => {
-    setCourses(schedules.find((s) => s.id === currentScheduleId)?.courses);
-  }, [currentScheduleId]);
+    setCourses(
+      schedules.find((s) => s.id === currentScheduleId)?.courses || [],
+    );
+  }, [currentScheduleId, schedules]);
 
   return (
     <>
@@ -31,7 +34,11 @@ export default function ExamsPage({ schedules }) {
             }))}
             onChange={setCurrentScheduleId}
           />
-          <ExamsTable courses={courses} />
+          <ExamsTable
+            courses={courses}
+            currentScheduleId={currentScheduleId}
+            setSchedules={setSchedules}
+          />
         </div>
       </div>
       <div className="grow"></div>
@@ -59,7 +66,7 @@ export async function getServerSideProps(context) {
   });
   return {
     props: {
-      schedules,
+      initialSchedules: schedules,
     },
   };
 }

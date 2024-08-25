@@ -50,8 +50,8 @@ export const examsTableHeaders = [
     key: "finalExamDate",
     value: "زمان امتحان",
   },
-  // {
-  //   key: 'remove',
-  //   value: 'حذف',
-  // },
+  {
+    key: "remove",
+    value: "حذف",
+  },
 ];
