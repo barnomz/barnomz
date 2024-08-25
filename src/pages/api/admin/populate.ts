@@ -19,6 +19,7 @@ type Course = {
   Info: string | null;
   Department: string;
   DepartmentCode: number;
+  Grade: string;
 };
 
 type CoursesResponse = Record<string, Course>;
@@ -30,6 +31,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
+  const result = await populate();
+  if (result)
+    res.status(200).json({ message: "Database populated successfully" });
+  else res.status(500).json({ error: "Failed to populate database" });
+};
+
+export const populate = async (): Promise<boolean> => {
   try {
     // Step 1: Fetch data from the API
     const response = await axios.get<CoursesResponse>(env.SCRAPER_URL);
@@ -40,7 +48,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const courseData = courses[courseCodeGroup];
       const courseCode = courseCodeGroup.split("-")[0];
 
-      if (!courseData || !courseCode) return;
+      if (!courseData || !courseCode) continue;
 
       // Step 3: Check and create Department if it doesn't exist
       let department = await db.department.findUnique({
@@ -84,11 +92,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           group: courseData.Group,
           finalExamDate: courseData.ExamDate ? courseData.ExamDate : null,
           finalExamTime: courseData.ExamTime ? courseData.ExamTime : null,
+          daysOfWeek: courseData.DaysOfWeek,
+          startTime: courseData.StartTime ? courseData.StartTime : null,
+          endTime: courseData.EndTime ? courseData.EndTime : null,
           numberOfCapacity: courseData.Capacity,
           numberOfEnrolled: courseData.Registered,
           info: courseData.Info,
           departmentId: department.code,
           presentedById: professor.id,
+          grade: courseData.Grade,
         },
         create: {
           courseCode: courseCode,
@@ -114,17 +126,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               id: professor.id,
             },
           },
-          grade: "",
+          grade: courseData.Grade,
           warning: "",
         },
       });
     }
 
     console.log("Database populated successfully");
-    res.status(200).json({ message: "Database populated successfully" });
+    return true;
   } catch (error) {
     console.error("Error populating database:", error);
-    res.status(500).json({ error: "Failed to populate database" });
+    return false;
   }
 };
 
