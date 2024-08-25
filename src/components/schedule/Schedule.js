@@ -1,5 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import FullCalendar from "@fullcalendar/react";
 import faLocale from "@fullcalendar/core/locales/fa";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -13,6 +11,7 @@ import { useToast } from "@/components/dls/toast/ToastService";
 import messages from "@/constants/messages.js";
 import { api } from "@/utils/api";
 import Tooltip from "@/components/dls/Tooltip.js";
+import DeleteScheduleButton from "@/components/schedule/DeleteScheduleButton.js";
 
 export default function Schedule({
   courses,
@@ -28,7 +27,6 @@ export default function Schedule({
   const [tooltipPosition, setTooltipPosition] = useState(null);
 
   const removeCourseMutation = api.schedule.removeCourse.useMutation();
-  const removeScheduleMutation = api.schedule.remove.useMutation();
 
   useEffect(() => {
     setCurrentScheduleId(schedules[0]?.id);
@@ -64,27 +62,6 @@ export default function Schedule({
   const handleEventMouseLeave = (_) => {
     setTooltipContent(<></>);
     setTooltipPosition(null);
-  };
-
-  const removeSchedule = async () => {
-    try {
-      await removeScheduleMutation.mutateAsync({
-        scheduleId: currentScheduleId,
-      });
-
-      setSchedules((prev) => prev.filter((s) => s.id !== currentScheduleId));
-
-      toast.open({
-        message: "برنامه حذف شد.",
-        type: "success",
-      });
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.detail ||
-        messages.ERROR_OCCURRED;
-      toast.open({ message, type: "error" });
-    }
   };
 
   const removeCourse = async () => {
@@ -187,13 +164,10 @@ export default function Schedule({
         }}
       />
 
-      <button
-        className="fixed bottom-4 left-4 z-50 flex items-center justify-center rounded-full bg-error-500 p-3 text-white shadow-lg transition-all duration-300 hover:opacity-85"
-        onClick={removeSchedule}
-      >
-        <FontAwesomeIcon icon={faTrash} />
-      </button>
-
+      <DeleteScheduleButton
+        currentScheduleId={currentScheduleId}
+        setSchedules={setSchedules}
+      />
       <Tooltip content={tooltipContent} position={tooltipPosition} />
     </div>
   );
