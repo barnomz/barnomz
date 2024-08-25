@@ -28,8 +28,6 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# This will do the trick, use the corresponding env file for each environment.
-COPY .env.prod .env.production
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
@@ -53,7 +51,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/.env.prod ./.env
 COPY --from=builder /app/prisma ./prisma
 
 COPY --from=builder /app/.next/standalone ./
