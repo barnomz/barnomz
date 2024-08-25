@@ -3,50 +3,16 @@ on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - uses: actions/checkout@v3
-
-      # Step 2: Set up Node.js (if needed for other steps)
       - uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      # Step 3: Install Liara CLI
-      - name: Install Liara CLI
-        run: npm install -g @liara/cli@5
-
-      # Step 4: Set Environment Variables on Liara
-      - name: Set Environment Variables on Liara
+      - name: update-liara
         env:
-          LIARA_API_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
-          SCRAPER_URL: ${{ vars.SCRAPER_URL }}
+          LIARA_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
         run: |
-          liara env:set \
-            DATABASE_URL="${DATABASE_URL}" \
-            NEXTAUTH_SECRET="${NEXTAUTH_SECRET}" \
-            NEXTAUTH_URL="${NEXTAUTH_URL}" \
-            SCRAPER_URL="${SCRAPER_URL}" \
-            --app="barnomz" \
-            --api-token="${LIARA_API_TOKEN}" \
-            --force
-
-      # Step 5: Deploy to Liara
-      - name: Deploy to Liara
-        env:
-          LIARA_API_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
-        run: |
-          liara deploy \
-            --app="barnomz" \
-            --api-token="${LIARA_API_TOKEN}" \
-            --no-app-logs \
-            --platform=docker \
-            --port=3000
+          npm i -g @liara/cli@5
+          liara deploy --app="barnomz" --api-token="$LIARA_TOKEN" --no-app-logs --platform=docker --port=3000
