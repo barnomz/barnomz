@@ -14,14 +14,25 @@ export const authRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Check if the username already exists
-      const existingUser = await ctx.db.user.findUnique({
+      const existingUsername = await ctx.db.user.findUnique({
         where: { username: input.username },
       });
 
-      if (existingUser) {
+      if (existingUsername) {
         throw new TRPCError({
           code: "CONFLICT",
           message: "Username already taken",
+        });
+      }
+
+      const existingStudentNumber = await ctx.db.user.findUnique({
+        where: { studentNumber: input.studentNumber },
+      });
+
+      if (existingStudentNumber) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Student number already exists",
         });
       }
 

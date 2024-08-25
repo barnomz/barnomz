@@ -6,6 +6,7 @@ const messages = {
   SCHEDULE_CREATED: "برنامه‌ی جدید با موفقیت ساخته شد.",
   DUPLICATE_USERNAME:
     "نام کاربری تکراری است. لطفا نام کاربری دیگری انتخاب کنید.",
+  DUPLICATE_STUDENT_NUMBER: "حساب کاربری با این شماره دانشجویی وجود دارد.",
 };
 
 export default messages;

@@ -61,7 +61,11 @@ export default function Register() {
     } catch (error) {
       let message;
       if (error.data?.code === "CONFLICT") {
-        message = messages.DUPLICATE_USERNAME;
+        if (error.data?.message.includes("Student number")) {
+          message = messages.DUPLICATE_STUDENT_NUMBER;
+        } else {
+          message = messages.DUPLICATE_USERNAME;
+        }
       } else {
         message =
           error.response?.data?.message ||
@@ -127,8 +131,8 @@ export default function Register() {
         <title>برنومز | ثبت‌نام</title>
       </Head>
       <div className="flex h-full items-center justify-center">
-        <div className="bg-primary/50 w-full max-w-md space-y-8 rounded-xl p-8 backdrop-blur">
-          <h2 className="text-grey-50 text-2xl font-bold">ثبت‌نام در برنومز</h2>
+        <div className="w-full max-w-md space-y-8 rounded-xl bg-primary/50 p-8 backdrop-blur">
+          <h2 className="text-2xl font-bold text-grey-50">ثبت‌نام در برنومز</h2>
           <BForm onSubmit={handleRegister}>
             <BInput
               required
