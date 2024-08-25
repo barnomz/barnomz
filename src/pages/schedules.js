@@ -38,8 +38,10 @@ export default function SchedulesPage({ initialSchedules, colleges }) {
             />
             <Schedule
               courses={courses}
-              currentScheduleId={currentScheduleId}
+              schedules={schedules}
               setSchedules={setSchedules}
+              currentScheduleId={currentScheduleId}
+              setCurrentScheduleId={setCurrentScheduleId}
             />
           </div>
 
