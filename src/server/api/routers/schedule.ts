@@ -27,6 +27,9 @@ export const scheduleRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           status: input.status,
         },
+        include: {
+          courses: true,
+        },
       });
     }),
 
