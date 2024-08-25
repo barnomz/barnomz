@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/components/dls/toast/ToastService";
 import messages from "@/constants/messages.js";
 import { api } from "@/utils/api";
+import Tooltip from "@/components/dls/Tooltip.js";
 
 export default function Schedule({
   courses,
@@ -23,6 +24,8 @@ export default function Schedule({
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [courseIdToBeDeleted, setCourseIdToBeDeleted] = useState(null);
+  const [tooltipContent, setTooltipContent] = useState(<></>);
+  const [tooltipPosition, setTooltipPosition] = useState(null);
 
   const removeCourseMutation = api.schedule.removeCourse.useMutation();
   const removeScheduleMutation = api.schedule.remove.useMutation();
@@ -34,6 +37,33 @@ export default function Schedule({
   const handleEventClick = (clickInfo) => {
     setCourseIdToBeDeleted(Number(clickInfo.event.id));
     setIsOpen(true);
+  };
+
+  const handleEventMouseEnter = (clickInfo) => {
+    const event = clickInfo.jsEvent;
+    console.log({ clickInfo });
+    const course = clickInfo.event.extendedProps;
+    const { top, left } = event.target.getBoundingClientRect();
+    setTooltipContent(
+      <>
+        <span className="text-sm font-bold">{`${course.courseName} (${course.group}-${course.courseCode})`}</span>
+        <br />
+        <span>{`استاد: ${course.presentedBy}`}</span>
+        <br />
+        <span>{`ظرفیت: ${course.numberOfCapacity}`}</span>
+        <br />
+        <span>{`تعداد ثبت‌نامی: ${course.numberOfEnrolled}`}</span>
+      </>,
+    );
+    setTooltipPosition({
+      top: top - 170,
+      left: left - 400,
+    });
+  };
+
+  const handleEventMouseLeave = (_) => {
+    setTooltipContent(<></>);
+    setTooltipPosition(null);
   };
 
   const removeSchedule = async () => {
@@ -114,6 +144,8 @@ export default function Schedule({
         weekends
         events={courses}
         eventClick={handleEventClick}
+        eventMouseEnter={handleEventMouseEnter}
+        eventMouseLeave={handleEventMouseLeave}
         slotMinTime={"07:00"}
         slotMaxTime={"20:00"}
         direction="rtl"
@@ -161,6 +193,8 @@ export default function Schedule({
       >
         <FontAwesomeIcon icon={faTrash} />
       </button>
+
+      <Tooltip content={tooltipContent} position={tooltipPosition} />
     </div>
   );
 }
