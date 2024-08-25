@@ -23,18 +23,18 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <ToastProvider>
         <div className="min-h-screen">
           <NavBar />
-          <AnimatePresence initial={false} mode="wait">
-            <motion.div
-              key={router.asPath}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col justify-center"
-            >
-              <Component key={router.asPath} {...pageProps} />
-            </motion.div>
-          </AnimatePresence>
+          {/*<AnimatePresence initial={false} mode="wait">*/}
+          {/*<motion.div*/}
+          {/*  key={router.asPath}*/}
+          {/*  initial={{ opacity: 0 }}*/}
+          {/*  animate={{ opacity: 1 }}*/}
+          {/*  exit={{ opacity: 0 }}*/}
+          {/*  transition={{ duration: 0.2 }}*/}
+          {/*  className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col justify-center"*/}
+          {/*>*/}
+          <Component key={router.asPath} {...pageProps} />
+          {/*</motion.div>*/}
+          {/*</AnimatePresence>*/}
         </div>
       </ToastProvider>
     </SessionProvider>
