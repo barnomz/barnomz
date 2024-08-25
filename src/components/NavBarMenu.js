@@ -51,6 +51,7 @@ export default function NavBarMenu() {
             {({ selected }) => (
               <Link
                 href={nav.link}
+                prefetch
                 className={classNames(
                   "ripple h-full text-sm font-bold",
                   "rounded-t-md px-4 py-2 hover:bg-primary focus-visible:outline-none",
