@@ -15,4 +15,4 @@ jobs:
           LIARA_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
         run: |
           npm i -g @liara/cli@5
-          liara deploy --app="barnomz" --api-token="$LIARA_TOKEN" --no-app-logs --platform=docker --port=3000
+          liara deploy --app="barnomz" --api-token="$LIARA_TOKEN" --no-app-logs --platform=docker
