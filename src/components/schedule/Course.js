@@ -13,7 +13,7 @@ const Course = ({ course, ...props }) => {
   const isSearch = ["search", "filter"].includes(mode);
 
   const wrapperClasses = cn(
-    "flex h-full w-full flex-col items-center justify-center cursor-pointer ripple border-primary-lighter border-[1px]",
+    "flex h-full w-full flex-col items-center justify-center !cursor-pointer border-primary-lighter border-[1px]",
     "gap-1 rounded-lg py-2",
     isSearch ? "text-grey-50" : "text-primary-darker",
     mode === "hover" && "bg-grey-300",
