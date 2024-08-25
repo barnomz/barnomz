@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import CollegeCombobox from "@/components/schedule/CollegeCombobox";
 import BInput from "@/components/dls/BInput";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +10,7 @@ import { api } from "@/utils/api";
 
 export default function CourseSelector({
   colleges,
+  courses,
   mode = "search",
   setCoursesOfSchedule,
   currentScheduleId,
@@ -21,8 +22,13 @@ export default function CourseSelector({
 
   const toast = useToast();
   const [query, setQuery] = useState("");
-  const [courses, setCourses] = useState([]);
+  const [coursesOfColleges, setCoursesOfColleges] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState(null);
+
+  const totalCreditSum = courses.reduce(
+    (sum, { unitCount }) => sum + Number(unitCount),
+    0,
+  );
 
   const {
     data: fetchedCourses,
@@ -36,7 +42,7 @@ export default function CourseSelector({
   useEffect(() => {
     if (fetchedCourses) {
       const mappedCourses = fetchedCourses.map(courseMapper);
-      setCourses(mappedCourses);
+      setCoursesOfColleges(mappedCourses);
     }
   }, [fetchedCourses]);
 
@@ -44,8 +50,8 @@ export default function CourseSelector({
 
   const filteredCourses =
     query === ""
-      ? courses
-      : courses.filter(
+      ? coursesOfColleges
+      : coursesOfColleges.filter(
           (course) =>
             course.courseCode.match(query) ||
             course.courseName.match(query) ||
@@ -111,6 +117,10 @@ export default function CourseSelector({
 
   return (
     <div className="hidden min-w-[20rem] max-w-[20rem] space-y-4 rounded-xl bg-primary/50 p-4 backdrop-blur md:block">
+      <div className="flex items-center justify-between px-1 text-sm">
+        <span>تعداد واحدهای انتخاب شده</span>
+        <span>{totalCreditSum}</span>
+      </div>
       <CollegeCombobox
         colleges={colleges}
         selectedCollege={selectedCollege}

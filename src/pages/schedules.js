@@ -45,6 +45,7 @@ export default function SchedulesPage({ initialSchedules, colleges }) {
 
           <CourseSelector
             colleges={colleges}
+            courses={courses}
             currentScheduleId={currentScheduleId}
             setCoursesOfSchedule={setCourses}
             setSchedules={setSchedules}
