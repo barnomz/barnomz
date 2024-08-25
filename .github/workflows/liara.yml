@@ -10,9 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+        with:
+          node-version: "20"
       - name: update-liara
         env:
           LIARA_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
         run: |
           npm i -g @liara/cli@5
-          liara deploy --app="barnomz" --api-token="$LIARA_TOKEN" --no-app-logs --platform=docker
+          liara deploy --app="barnomz" --api-token="$LIARA_TOKEN" --no-app-logs
