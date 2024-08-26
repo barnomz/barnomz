@@ -32,7 +32,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
           {/*  transition={{ duration: 0.2 }}*/}
           {/*  className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col justify-center"*/}
           {/*>*/}
-          <Component key={router.asPath} {...pageProps} />
+          <div className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col justify-center">
+            <Component key={router.asPath} {...pageProps} />
+          </div>
           {/*</motion.div>*/}
           {/*</AnimatePresence>*/}
         </div>
