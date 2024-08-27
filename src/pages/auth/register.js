@@ -53,10 +53,19 @@ export default function Register() {
       });
 
       if (result.ok) {
-        toast.open({ message: messages.REGISTER_SUCCESS, type: "success" });
         await router.replace("/schedules");
+        toast.open({ message: messages.REGISTER_SUCCESS, type: "success" });
       } else {
-        throw new Error("Failed to sign in");
+        console.error("Login failed:", result.error);
+        if (result.error === "CredentialsSignin") {
+          toast.open({
+            message: "ورود ناموفق بود.",
+            type: "error",
+          });
+        } else {
+          toast.open({ message: "خطایی رخ داده است.", type: "error" });
+        }
+        setIsLoading(false);
       }
     } catch (error) {
       let message;
@@ -73,7 +82,6 @@ export default function Register() {
           messages.ERROR_OCCURRED;
       }
       toast.open({ message, type: "error" });
-    } finally {
       setIsLoading(false);
     }
   };

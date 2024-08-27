@@ -37,16 +37,12 @@ export default function Login() {
       method: formIndex === 0 ? "username" : "studentNumber",
       callbackUrl: "/schedules",
     });
-    setIsLoading((prev) =>
-      prev.map((loading, i) => (i === formIndex ? false : loading)),
-    );
 
     if (result.ok && result.url) {
-      toast.open({ message: messages.LOGIN_SUCCESS, type: "success" });
       await router.replace(result.url);
+      toast.open({ message: messages.LOGIN_SUCCESS, type: "success" });
     } else {
       console.error("Login failed:", result.error);
-      // check status code and show appropriate message
       if (result.error === "CredentialsSignin") {
         toast.open({
           message: "ورود ناموفق بود.",
@@ -55,6 +51,9 @@ export default function Login() {
       } else {
         toast.open({ message: "خطایی رخ داده است.", type: "error" });
       }
+      setIsLoading((prev) =>
+        prev.map((loading, i) => (i === formIndex ? false : loading)),
+      );
     }
   };
 
