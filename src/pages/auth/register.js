@@ -61,7 +61,7 @@ export default function Register() {
     } catch (error) {
       let message;
       if (error.data?.code === "CONFLICT") {
-        if (error.data?.message.includes("Student number")) {
+        if (error.message.includes("Student number")) {
           message = messages.DUPLICATE_STUDENT_NUMBER;
         } else {
           message = messages.DUPLICATE_USERNAME;
