@@ -1,4 +1,9 @@
-input,
+input {
+  -webkit-appearance: none;
+  margin: 0;
+  background-color: transparent !important;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -9,9 +14,10 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  -webkit-appearance: none;
-  margin: 0;
-  background-color: transparent !important;
+  -webkit-transition: color 9999s ease-out, background-color 9999s ease-out !important;
+  -webkit-transition-delay: 9999s !important;
+  transition: color 9999s ease-out, background-color 9999s ease-out !important;
+  transition-delay: 9999s !important;
 }
 
 /* Firefox */
