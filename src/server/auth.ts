@@ -44,8 +44,28 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
+        studentNumber: { label: "Student Number", type: "text" },
+        method: { label: "Method", type: "text" },
       },
       async authorize(credentials) {
+        if (
+          !!credentials?.studentNumber &&
+          credentials?.method === "studentNumber"
+        ) {
+          const user = await db.user.findUnique({
+            where: { studentNumber: credentials.studentNumber },
+          });
+
+          if (!user) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            name: user.username,
+          };
+        }
+
         if (!credentials?.username || !credentials?.password) {
           return null;
         }

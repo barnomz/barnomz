@@ -16,23 +16,30 @@ import messages from "@/constants/messages.js";
 export default function Login() {
   const router = useRouter();
   const toast = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState([false, false]);
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
+    studentNumber: "",
   });
 
-  const handleLogin = async (isFormValid) => {
+  const handleLogin = async (isFormValid, formIndex) => {
     if (!isFormValid) return;
 
-    setIsLoading(true);
+    setIsLoading((prev) =>
+      prev.map((loading, i) => (i === formIndex ? true : loading)),
+    );
     const result = await signIn("credentials", {
       redirect: false,
       username: credentials.username,
       password: credentials.password,
+      studentNumber: credentials.studentNumber,
+      method: formIndex === 0 ? "username" : "studentNumber",
       callbackUrl: "/schedules",
     });
-    setIsLoading(false);
+    setIsLoading((prev) =>
+      prev.map((loading, i) => (i === formIndex ? false : loading)),
+    );
 
     if (result.ok && result.url) {
       toast.open({ message: messages.LOGIN_SUCCESS, type: "success" });
@@ -42,7 +49,7 @@ export default function Login() {
       // check status code and show appropriate message
       if (result.error === "CredentialsSignin") {
         toast.open({
-          message: "نام کاربری یا رمز عبور اشتباه است.",
+          message: "ورود ناموفق بود.",
           type: "error",
         });
       } else {
@@ -62,6 +69,10 @@ export default function Login() {
     { rule: hasValue, message: "وارد کردن نام کاربری الزامی است." },
   ];
 
+  const studentNumberValidations = [
+    { rule: hasValue, message: "وارد کردن شماره دانشجویی الزامی است." },
+  ];
+
   const passwordValidations = [
     { rule: hasValue, message: "وارد کردن رمز عبور الزامی است." },
   ];
@@ -74,7 +85,7 @@ export default function Login() {
       <div className="flex h-full items-center justify-center">
         <div className="w-full max-w-md space-y-8 rounded-xl bg-primary/50 p-8 backdrop-blur">
           <h2 className="text-2xl font-bold text-grey-50">ورود به برنومز</h2>
-          <BForm onSubmit={handleLogin}>
+          <BForm onSubmit={(isFormValid) => handleLogin(isFormValid, 0)}>
             <BInput
               required
               label="نام کاربری"
@@ -89,7 +100,12 @@ export default function Login() {
               validations={passwordValidations}
               onChange={updateField("password")}
             />
-            <BBtn type="submit" className="mb-4" block loading={isLoading}>
+            <BBtn
+              type="submit"
+              className="mb-4 min-h-[44px]"
+              block
+              loading={isLoading[0]}
+            >
               ورود
             </BBtn>
             <BLink
@@ -100,6 +116,33 @@ export default function Login() {
             >
               ثبت‌نام نکرده‌اید؟
             </BLink>
+          </BForm>
+          <div className="relative flex h-px w-full items-center justify-center gap-2">
+            <div className="h-px w-full bg-white/40"></div>
+            <div className="flex h-6 w-6 items-center justify-center font-bold text-white">
+              یا
+            </div>
+            <div className="h-px w-full bg-white/40"></div>
+          </div>
+          <BForm onSubmit={(isFormValid) => handleLogin(isFormValid, 1)}>
+            <div className="flex items-center gap-4">
+              <BInput
+                required
+                label="شماره دانشجویی"
+                placeholder="شماره دانشجویی خود را وارد نمایید"
+                validations={studentNumberValidations}
+                className="w-full"
+                wrapperClass="!h-[46px] mt-1"
+                onChange={updateField("studentNumber")}
+              />
+              <BBtn
+                type="submit"
+                className="min-w-[52px]"
+                loading={isLoading[1]}
+              >
+                ورود
+              </BBtn>
+            </div>
           </BForm>
         </div>
       </div>
