@@ -1,7 +1,7 @@
 const messages = {
   ERROR_OCCURRED: "خطایی رخ داده است",
   REGISTER_SUCCESS: "ثبت‌نام شما موفقیت‌آمیز بود",
-  LOGIN_SUCCESS: "ورود شما موفقیت‌آمیز بود",
+  LOGIN_SUCCESS: "با موفقیت وارد شدید",
   FORM_INVALID: "فیلدها را به درستی مقداردهی کنید",
   SCHEDULE_CREATED: "برنامه‌ی جدید با موفقیت ساخته شد.",
   DUPLICATE_USERNAME:

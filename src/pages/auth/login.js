@@ -8,14 +8,10 @@ import BBtn from "@/components/dls/BBtn";
 import Head from "next/head";
 import BLink from "@/components/dls/BLink";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import {
-  hasLetter,
-  hasNumber,
-  hasValue,
-  lengthIsGreaterOrEqualThan,
-} from "@/utils/validations";
+import { hasValue } from "@/utils/validations";
 import { useToast } from "@/components/dls/toast/ToastService";
 import { getServerAuthSession } from "@/server/auth";
+import messages from "@/constants/messages.js";
 
 export default function Login() {
   const router = useRouter();
@@ -39,12 +35,16 @@ export default function Login() {
     setIsLoading(false);
 
     if (result.ok && result.url) {
+      toast.open({ message: messages.LOGIN_SUCCESS, type: "success" });
       await router.replace(result.url);
     } else {
       console.error("Login failed:", result.error);
       // check status code and show appropriate message
       if (result.error === "CredentialsSignin") {
-        toast.open({ message: "ورود ناموفق بود.", type: "error" });
+        toast.open({
+          message: "نام کاربری یا رمز عبور اشتباه است.",
+          type: "error",
+        });
       } else {
         toast.open({ message: "خطایی رخ داده است.", type: "error" });
       }
@@ -60,20 +60,10 @@ export default function Login() {
 
   const usernameValidations = [
     { rule: hasValue, message: "وارد کردن نام کاربری الزامی است." },
-    {
-      rule: lengthIsGreaterOrEqualThan(5),
-      message: "نام کاربری باید حداقل ۵ کاراکتر باشد.",
-    },
   ];
 
   const passwordValidations = [
     { rule: hasValue, message: "وارد کردن رمز عبور الزامی است." },
-    { rule: hasLetter, message: "رمز عبور باید شامل حروف باشد." },
-    { rule: hasNumber, message: "رمز عبور باید شامل اعداد باشد." },
-    {
-      rule: lengthIsGreaterOrEqualThan(8),
-      message: "رمز عبور باید حداقل ۸ کاراکتر باشد.",
-    },
   ];
 
   return (
@@ -82,8 +72,8 @@ export default function Login() {
         <title>برنومز | ورود</title>
       </Head>
       <div className="flex h-full items-center justify-center">
-        <div className="bg-primary/50 w-full max-w-md space-y-8 rounded-xl p-8 backdrop-blur">
-          <h2 className="text-grey-50 text-2xl font-bold">ورود به برنومز</h2>
+        <div className="w-full max-w-md space-y-8 rounded-xl bg-primary/50 p-8 backdrop-blur">
+          <h2 className="text-2xl font-bold text-grey-50">ورود به برنومز</h2>
           <BForm onSubmit={handleLogin}>
             <BInput
               required
