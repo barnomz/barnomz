@@ -17,6 +17,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^1.6.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
@@ -48,6 +49,7 @@
     "zod": "^3.23.3"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.15",
     "@types/bcrypt": "^5.0.2",
     "@types/eslint": "^8.56.10",
     "@types/node": "^20.14.10",
