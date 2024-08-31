@@ -39,7 +39,7 @@ export const examsTableHeaders = [
     value: "گروه",
   },
   {
-    key: "credit",
+    key: "unitCount",
     value: "واحد",
   },
   {

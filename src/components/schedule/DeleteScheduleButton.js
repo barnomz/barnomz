@@ -1,36 +1,28 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import messages from "@/constants/messages";
 import { useToast } from "@/components/dls/toast/ToastService";
-import { api } from "@/utils/api";
+import { useAtom } from "jotai";
+import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
 
-export default function DeleteScheduleButton({
-  currentScheduleId,
-  setSchedules,
-}) {
+export default function DeleteScheduleButton() {
   const toast = useToast();
-
-  const removeScheduleMutation = api.schedule.remove.useMutation();
+  const [schedules, setSchedules] = useAtom(schedulesAtom);
+  const [currentScheduleId, setCurrentScheduleId] = useAtom(
+    currentScheduleIdAtom,
+  );
 
   const removeSchedule = async () => {
-    try {
-      await removeScheduleMutation.mutateAsync({
-        scheduleId: currentScheduleId,
-      });
+    const scheduleIdToBeDeleted = currentScheduleId;
+    const nextScheduleId =
+      schedules[schedules.findIndex((s) => s.id === scheduleIdToBeDeleted) + 1]
+        ?.id || 0;
+    setSchedules((prev) => prev.filter((s) => s.id !== scheduleIdToBeDeleted));
+    setCurrentScheduleId(nextScheduleId);
 
-      setSchedules((prev) => prev.filter((s) => s.id !== currentScheduleId));
-
-      toast.open({
-        message: "برنامه حذف شد.",
-        type: "success",
-      });
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.detail ||
-        messages.ERROR_OCCURRED;
-      toast.open({ message, type: "error" });
-    }
+    toast.open({
+      message: "برنامه حذف شد.",
+      type: "success",
+    });
   };
 
   return (

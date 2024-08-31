@@ -1,37 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CollegeCombobox from "@/components/schedule/CollegeCombobox";
 import BInput from "@/components/dls/BInput";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Loading from "@/components/Loading";
-import messages from "@/constants/messages";
-import { useToast } from "@/components/dls/toast/ToastService";
 import { courseMapper } from "@/utils/mappers";
 import { api } from "@/utils/api";
 import Tooltip from "@/components/dls/Tooltip";
+import { useAtomValue } from "jotai";
+import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
+import { useImmerAtom } from "jotai-immer";
+import TooltipContent from "@/components/schedule/TooltipContent.js";
 
-export default function CourseSelector({
-  colleges,
-  courses,
-  mode = "search",
-  setCoursesOfSchedule,
-  currentScheduleId,
-  setSchedules,
-}) {
+export default function CourseSelector({ colleges, mode = "search" }) {
   if (!["search", "filter"].includes(mode)) {
     throw new Error("The mode should be either search or filter.");
   }
 
-  const toast = useToast();
+  const [schedules, setSchedules] = useImmerAtom(schedulesAtom);
+  const currentScheduleId = useAtomValue(currentScheduleIdAtom);
   const [query, setQuery] = useState("");
   const [coursesOfColleges, setCoursesOfColleges] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState(null);
   const [tooltipContent, setTooltipContent] = useState(<></>);
   const [tooltipPosition, setTooltipPosition] = useState(null);
 
-  const totalCreditSum = courses.reduce(
-    (sum, { unitCount }) => sum + Number(unitCount),
-    0,
-  );
+  const courses = useMemo(() => {
+    const schedule = schedules.find((s) => s.id === currentScheduleId);
+    return schedule ? schedule.courses : [];
+  }, [schedules, currentScheduleId]);
+
+  const totalCreditSum = courses
+    .filter((c) => !c.mode)
+    .reduce((sum, { unitCount }) => sum + Number(unitCount), 0);
 
   const {
     data: fetchedCourses,
@@ -45,11 +45,16 @@ export default function CourseSelector({
   useEffect(() => {
     if (fetchedCourses) {
       const mappedCourses = fetchedCourses.map(courseMapper);
-      setCoursesOfColleges(mappedCourses);
+      const sortedCourses = mappedCourses.sort((a, b) => {
+        const gradeOrder = { bs: 0, ms: 1, phd: 2 };
+        const gradeComparison = gradeOrder[a.grade] - gradeOrder[b.grade];
+        if (gradeComparison !== 0) return gradeComparison;
+        if (a.courseCode === b.courseCode) return a.group - b.group;
+        return a.courseCode.localeCompare(b.courseCode);
+      });
+      setCoursesOfColleges(sortedCourses);
     }
   }, [fetchedCourses]);
-
-  const addCourseMutation = api.schedule.addCourse.useMutation();
 
   const filteredCourses =
     query === ""
@@ -66,73 +71,41 @@ export default function CourseSelector({
   };
 
   const handleAddCourseToSchedule = async (course) => {
-    try {
-      await addCourseMutation.mutateAsync({
-        scheduleId: currentScheduleId,
-        courseId: course.id,
-      });
-      addCourse(course);
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.detail ||
-        messages.ERROR_OCCURRED;
-      toast.open({ message, type: "error" });
-      console.error("Error adding course:", error);
-    }
-  };
+    setSchedules((draft) => {
+      const schedule = draft.find((s) => s.id === currentScheduleId);
+      if (!schedule) return;
 
-  const addCourse = (course) => {
-    setCoursesOfSchedule((prev) => {
-      const courseInSchedule = prev.find((c) => c.id === course.id);
-      if (!courseInSchedule) return prev;
+      const courseInSchedule = schedule.courses.find((c) => c.id === course.id);
+      if (!courseInSchedule || !courseInSchedule.mode) return;
+
       delete courseInSchedule.mode;
-      return [...prev, { ...courseInSchedule }];
     });
-    setSchedules((prev) =>
-      prev.map((schedule) => {
-        if (schedule.id === currentScheduleId) {
-          return {
-            ...schedule,
-            courses: [...schedule.courses, course],
-          };
-        }
-        return schedule;
-      }),
-    );
   };
 
   const addCourseAsHover = (course) => {
-    setCoursesOfSchedule((prev) => {
-      const courseInSchedule = prev.find((c) => c.id === course.id);
-      if (courseInSchedule) return prev;
-      return [...prev, { ...course, mode: "hover" }];
+    setSchedules((draft) => {
+      const schedule = draft.find((s) => s.id === currentScheduleId);
+      if (!schedule || schedule.courses.some((c) => c.id === course.id)) return;
+
+      schedule.courses.push({ ...course, mode: "hover" });
     });
   };
 
   const removeCourse = (course) => {
-    setCoursesOfSchedule((prev) => {
-      const courseInSchedule = prev.find((c) => c.id === course.id);
-      if (courseInSchedule.mode !== "hover") return prev;
-      return prev.filter((c) => c.id !== course.id);
+    setSchedules((draft) => {
+      const schedule = draft.find((s) => s.id === currentScheduleId);
+      if (!schedule) return;
+      const courseInSchedule = schedule.courses.find((c) => c.id === course.id);
+      if (courseInSchedule.mode !== "hover") return;
+
+      schedule.courses = schedule.courses.filter((c) => c.id !== course.id);
     });
   };
 
   const handleMouseEnter = (course, event) => {
     addCourseAsHover(course);
-    const { top, left, width, height } =
-      event.currentTarget.getBoundingClientRect();
-    setTooltipContent(
-      <>
-        <span className="text-sm font-bold">{`${course.courseName} (${course.group}-${course.courseCode})`}</span>
-        <br />
-        <span>{`استاد: ${course.presentedBy}`}</span>
-        <br />
-        <span>{`ظرفیت: ${course.numberOfCapacity}`}</span>
-        <br />
-        <span>{`تعداد ثبت‌نامی: ${course.numberOfEnrolled}`}</span>
-      </>,
-    );
+    const { top, width } = event.currentTarget.getBoundingClientRect();
+    setTooltipContent(<TooltipContent course={course} />);
     setTooltipPosition({
       top: top - 120,
       left: width + 40,
@@ -172,7 +145,7 @@ export default function CourseSelector({
           filteredCourses.map((course, i) => (
             <div
               key={i}
-              className="relative flex cursor-pointer items-center justify-between rounded bg-grey-300/60 px-2 py-1 text-primary-darker transition-all hover:bg-grey-300"
+              className="relative flex cursor-pointer select-none items-center justify-between rounded bg-grey-300/60 px-2 py-1 text-primary-darker transition-all hover:bg-grey-300"
               onMouseEnter={(event) => handleMouseEnter(course, event)}
               onMouseLeave={() => handleMouseLeave(course)}
               onClick={() => handleAddCourseToSchedule(course)}

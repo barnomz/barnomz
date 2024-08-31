@@ -1,18 +1,36 @@
 import { examsTableHeaders } from "@/constants/const";
 import moment from "moment-jalaali";
-import BBtn from "@/components/dls/BBtn.js";
+import BBtn from "@/components/dls/BBtn";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import messages from "@/constants/messages";
-import { api } from "@/utils/api";
 import { useToast } from "@/components/dls/toast/ToastService";
+import { useAtomValue } from "jotai";
+import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
+import { useImmerAtom } from "jotai-immer";
+import { useMemo } from "react";
 
-export default function ExamsTable({
-  courses,
-  currentScheduleId,
-  setSchedules,
-}) {
+export default function ExamsTable() {
   const toast = useToast();
-  const removeCourseMutation = api.schedule.removeCourse.useMutation();
+  const [schedules, setSchedules] = useImmerAtom(schedulesAtom);
+  const currentScheduleId = useAtomValue(currentScheduleIdAtom);
+
+  const courses = useMemo(() => {
+    const schedule = schedules.find((s) => s.id === currentScheduleId);
+    if (!schedule) return [];
+
+    return [...schedule.courses].sort((a, b) => {
+      const jalaliDateTimeStringA = `${a.finalExamDate} ${a.finalExamTime}`;
+      const jalaliDateTimeStringB = `${b.finalExamDate} ${b.finalExamTime}`;
+
+      const jDateTimeA = moment(jalaliDateTimeStringA, "jYYYY/jMM/jDD HH:mm");
+      const jDateTimeB = moment(jalaliDateTimeStringB, "jYYYY/jMM/jDD HH:mm");
+
+      return jDateTimeA.isBefore(jDateTimeB)
+        ? -1
+        : jDateTimeA.isAfter(jDateTimeB)
+          ? 1
+          : 0;
+    });
+  }, [schedules, currentScheduleId]);
 
   const renderProperty = (course, key) => {
     const property = course[key];
@@ -33,43 +51,25 @@ export default function ExamsTable({
   };
 
   const removeCourse = async (courseId) => {
-    try {
-      await removeCourseMutation.mutateAsync({
-        scheduleId: currentScheduleId,
-        courseId: courseId,
-      });
-
-      setSchedules((prev) =>
-        prev.map((schedule) => {
-          if (schedule.id === currentScheduleId) {
-            return {
-              ...schedule,
-              courses: schedule.courses.filter(
-                (course) => course.id !== courseId,
-              ),
-            };
-          }
-          return schedule;
-        }),
+    setSchedules((draft) => {
+      const schedule = draft.find(
+        (schedule) => schedule.id === currentScheduleId,
       );
+      if (!schedule) return;
+      schedule.courses = schedule.courses.filter(
+        (course) => course.id !== courseId,
+      );
+    });
 
-      toast.open({
-        message: "درس حذف شد.",
-        type: "success",
-      });
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.detail ||
-        messages.ERROR_OCCURRED;
-      toast.open({ message, type: "error" });
-    }
+    toast.open({
+      message: "درس حذف شد.",
+      type: "success",
+    });
   };
 
-  const totalCreditSum = courses.reduce(
-    (sum, { credit }) => sum + Number(credit),
-    0,
-  );
+  const totalCreditSum = courses
+    .filter((c) => !c.mode)
+    .reduce((sum, { unitCount }) => sum + Number(unitCount), 0);
 
   return (
     <div className="exams-table relative overflow-x-auto rounded-md shadow-md">

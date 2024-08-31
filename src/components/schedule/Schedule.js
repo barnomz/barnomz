@@ -6,31 +6,28 @@ import Course from "@/components/schedule/Course";
 import { convertPersianNumberToEnglish } from "@/utils/helpers";
 import { weekDays } from "@/constants/const";
 import DeleteCourseDialogConfirmation from "@/components/schedule/DeleteCourseDialogConfirmation";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useToast } from "@/components/dls/toast/ToastService";
-import messages from "@/constants/messages.js";
-import { api } from "@/utils/api";
-import Tooltip from "@/components/dls/Tooltip.js";
-import DeleteScheduleButton from "@/components/schedule/DeleteScheduleButton.js";
+import Tooltip from "@/components/dls/Tooltip";
+import DeleteScheduleButton from "@/components/schedule/DeleteScheduleButton";
+import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
+import { useAtomValue } from "jotai";
+import { useImmerAtom } from "jotai-immer";
+import TooltipContent from "@/components/schedule/TooltipContent.js";
 
-export default function Schedule({
-  courses,
-  schedules,
-  setSchedules,
-  currentScheduleId,
-  setCurrentScheduleId,
-}) {
+export default function Schedule() {
   const toast = useToast();
+  const [schedules, setSchedules] = useImmerAtom(schedulesAtom);
+  const currentScheduleId = useAtomValue(currentScheduleIdAtom);
   const [isOpen, setIsOpen] = useState(false);
   const [courseIdToBeDeleted, setCourseIdToBeDeleted] = useState(null);
   const [tooltipContent, setTooltipContent] = useState(<></>);
   const [tooltipPosition, setTooltipPosition] = useState(null);
 
-  const removeCourseMutation = api.schedule.removeCourse.useMutation();
-
-  useEffect(() => {
-    setCurrentScheduleId(schedules[0]?.id);
-  }, [schedules]);
+  const courses = useMemo(() => {
+    const schedule = schedules.find((s) => s.id === currentScheduleId);
+    return schedule ? schedule.courses : [];
+  }, [schedules, currentScheduleId]);
 
   const handleEventClick = (clickInfo) => {
     setCourseIdToBeDeleted(Number(clickInfo.event.id));
@@ -39,20 +36,9 @@ export default function Schedule({
 
   const handleEventMouseEnter = (clickInfo) => {
     const event = clickInfo.jsEvent;
-    console.log({ clickInfo });
     const course = clickInfo.event.extendedProps;
     const { top, left } = event.target.getBoundingClientRect();
-    setTooltipContent(
-      <>
-        <span className="text-sm font-bold">{`${course.courseName} (${course.group}-${course.courseCode})`}</span>
-        <br />
-        <span>{`استاد: ${course.presentedBy}`}</span>
-        <br />
-        <span>{`ظرفیت: ${course.numberOfCapacity}`}</span>
-        <br />
-        <span>{`تعداد ثبت‌نامی: ${course.numberOfEnrolled}`}</span>
-      </>,
-    );
+    setTooltipContent(<TooltipContent course={course} />);
     setTooltipPosition({
       top: top - 170,
       left: left - 400,
@@ -65,39 +51,18 @@ export default function Schedule({
   };
 
   const removeCourse = async () => {
-    try {
-      await removeCourseMutation.mutateAsync({
-        scheduleId: currentScheduleId,
-        courseId: courseIdToBeDeleted,
-      });
-
-      setSchedules((prev) =>
-        prev.map((schedule) => {
-          if (schedule.id === currentScheduleId) {
-            return {
-              ...schedule,
-              courses: schedule.courses.filter(
-                (course) => course.id !== courseIdToBeDeleted,
-              ),
-            };
-          }
-          return schedule;
-        }),
+    setSchedules((draft) => {
+      const schedule = draft.find((s) => s.id === currentScheduleId);
+      if (!schedule) return;
+      schedule.courses = schedule.courses.filter(
+        (c) => c.id !== courseIdToBeDeleted,
       );
-
-      toast.open({
-        message: "درس حذف شد.",
-        type: "success",
-      });
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.detail ||
-        messages.ERROR_OCCURRED;
-      toast.open({ message, type: "error" });
-    } finally {
-      setIsOpen(false);
-    }
+    });
+    toast.open({
+      message: "درس حذف شد.",
+      type: "success",
+    });
+    setIsOpen(false);
   };
 
   return (
@@ -164,10 +129,7 @@ export default function Schedule({
         }}
       />
 
-      <DeleteScheduleButton
-        currentScheduleId={currentScheduleId}
-        setSchedules={setSchedules}
-      />
+      <DeleteScheduleButton />
       <Tooltip content={tooltipContent} position={tooltipPosition} />
     </div>
   );
