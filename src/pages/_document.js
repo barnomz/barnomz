@@ -47,9 +47,7 @@ function Document(props) {
 
 Document.getInitialProps = async (ctx) => {
   const initialProps = await ctx.defaultGetInitialProps(ctx);
-  const userAgent = ctx.req
-    ? ctx.req.headers["user-agent"]
-    : navigator.userAgent;
+  const userAgent = ctx.req.headers["user-agent"];
 
   return {
     ...initialProps,
