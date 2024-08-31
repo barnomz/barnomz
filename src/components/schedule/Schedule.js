@@ -40,8 +40,8 @@ export default function Schedule() {
     const { top, left } = event.target.getBoundingClientRect();
     setTooltipContent(<TooltipContent course={course} inSchedule />);
     setTooltipPosition({
-      top: top - 170,
-      left: left - 400,
+      top: top - 205,
+      left: left - 420,
     });
   };
 

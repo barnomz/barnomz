@@ -12,6 +12,13 @@ export default function DeleteScheduleButton() {
   );
 
   const removeSchedule = async () => {
+    if (schedules.length === 1) {
+      toast.open({
+        message: "حداقل یک برنامه باید داشته باشید.",
+        type: "error",
+      });
+      return;
+    }
     const scheduleIdToBeDeleted = currentScheduleId;
     const nextScheduleId =
       schedules[schedules.findIndex((s) => s.id === scheduleIdToBeDeleted) + 1]

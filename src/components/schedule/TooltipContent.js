@@ -28,6 +28,7 @@ const TooltipContent = ({ course, inSchedule = false }) => {
     );
 
   const getCourseFinalExamDateAndTime = (course) => {
+    if (!course.finalExamTime || course.finalExamDate) return null;
     const jalaliDateTimeString = `${course.finalExamDate} ${course.finalExamTime}`;
     const jDateTime = moment(jalaliDateTimeString, "jYYYY/jMM/jDD HH:mm");
     const formatter = new Intl.DateTimeFormat("fa-IR", {
@@ -47,9 +48,7 @@ const TooltipContent = ({ course, inSchedule = false }) => {
       <span>{`استاد: ${course.presentedBy}`}</span>
       <span>{`ظرفیت: ${course.numberOfCapacity}`}</span>
       <span>{`تعداد ثبت‌نامی: ${course.numberOfEnrolled}`}</span>
-      {course.finalExamTime && course.finalExamDate && (
-        <span>{`تاریخ امتحان: ${getCourseFinalExamDateAndTime(course)}`}</span>
-      )}
+      <span>{`تاریخ امتحان: ${getCourseFinalExamDateAndTime(course) || "-"}`}</span>
       {!inSchedule && examConflict && !isInSchedule && (
         <div className="pt-2 text-warning">
           تلاقی امتحان با دروس انتخابی دارد.
