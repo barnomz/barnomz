@@ -1,5 +1,4 @@
 import { type Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
 import colors from "./src/constants/palette";
 
 export default {
@@ -10,5 +9,5 @@ export default {
   theme: {
     colors,
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 } satisfies Config;

@@ -1,47 +1,27 @@
-import BBtn from "@/components/dls/BBtn";
-import { signOut, useSession } from "next-auth/react";
 import NavBarMenu from "@/components/NavBarMenu";
 import Link from "next/link";
+import BBtn from "@/components/dls/BBtn";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import InfoDialog from "@/components/InfoDialog";
 import { useState } from "react";
+import { cn } from "@/utils/helpers";
 
 export default function NavBar() {
-  const [isLoading, setIsLoading] = useState(false);
-  const session = useSession();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const logout = () => {
-    setIsLoading(true);
-    signOut({ callbackUrl: "/auth/login" }).then();
-    setIsLoading(false);
+  const tooltip = (title, className) => {
+    return (
+      <span
+        className={cn(
+          "top-13 fixed z-50 mt-1 w-max rounded bg-black p-2 text-xs text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100",
+          className,
+        )}
+      >
+        {title}
+      </span>
+    );
   };
-
-  const navBarEndLoading = (
-    <div className="flex gap-4">
-      <div className="h-[2.25rem] w-[4.5rem] animate-pulse rounded bg-white/10"></div>
-      <div className="h-[2.25rem] w-[4.5rem] animate-pulse rounded bg-white/10"></div>
-    </div>
-  );
-
-  const navBarEndLoggedIn = (
-    <BBtn
-      color="primary"
-      className="h-[2.25rem]"
-      onClick={logout}
-      loading={isLoading}
-    >
-      خروج
-    </BBtn>
-  );
-
-  const navBarEndLoggedOut = (
-    <div className="flex gap-4">
-      <BBtn to="/auth/login" color="primary" className="h-[2.25rem]">
-        ورود
-      </BBtn>
-      <BBtn to="/auth/register" className="h-[2.25rem]">
-        ثبت‌نام
-      </BBtn>
-    </div>
-  );
 
   return (
     <div className="sticky flex h-[3.75rem] w-full items-center justify-between bg-primary/50 px-[1.5rem] py-[0.75rem] backdrop-blur">
@@ -52,12 +32,32 @@ export default function NavBar() {
           width="100px"
         />
       </Link>
-      {session.status === "authenticated" && <NavBarMenu />}
+      <NavBarMenu />
       <div className="flex items-center gap-2">
-        {session.status === "loading" && navBarEndLoading}
-        {session.status === "authenticated" && navBarEndLoggedIn}
-        {session.status === "unauthenticated" && navBarEndLoggedOut}
+        <div className="group relative">
+          <BBtn
+            to="https://github.com/barnomz/barnomz"
+            icon={faGithub}
+            target="_blank"
+            iconSize="2xl"
+            color="primary"
+            className="!p-2"
+          />
+          {tooltip("گیت‌هاب", "left-16")}
+        </div>
+        <div className="group relative">
+          <BBtn
+            icon={faInfo}
+            iconSize="xl"
+            color="primary"
+            className="!py-[11.5px]"
+            onClick={() => setIsOpen(true)}
+          />
+          {tooltip("درباره ما", "left-4")}
+        </div>
       </div>
+
+      <InfoDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </div>
   );
 }

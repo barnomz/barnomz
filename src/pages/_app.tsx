@@ -1,5 +1,3 @@
-import { type Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 
 import { api } from "@/utils/api";
@@ -10,37 +8,61 @@ import ToastProvider from "@/components/dls/toast/ToastProvider";
 import { AnimatePresence, motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import { Provider as JotaiProvider } from "jotai";
+import Head from "next/head";
+import { GetServerSidePropsContext } from "next";
 
 config.autoAddCss = false;
 
-const MyApp: AppType<{ session: Session | null }> = ({
-  Component,
-  pageProps: { session, ...pageProps },
-  router,
-}) => {
+type AppTypeArguments = {
+  userAgent:
+    | {
+        isMobile: boolean;
+        isTablet: boolean;
+      }
+    | undefined;
+};
+
+const MyApp: AppType<AppTypeArguments> = ({ Component, pageProps, router }) => {
   return (
-    <SessionProvider session={session}>
+    <JotaiProvider>
       <ToastProvider>
+        <Head>
+          {(pageProps.userAgent?.isMobile || pageProps.userAgent?.isTablet) && (
+            <meta name="viewport" content="width=1280" />
+          )}
+        </Head>
         <div className="min-h-screen">
           <NavBar />
-          {/*<AnimatePresence initial={false} mode="wait">*/}
-          {/*<motion.div*/}
-          {/*  key={router.asPath}*/}
-          {/*  initial={{ opacity: 0 }}*/}
-          {/*  animate={{ opacity: 1 }}*/}
-          {/*  exit={{ opacity: 0 }}*/}
-          {/*  transition={{ duration: 0.2 }}*/}
-          {/*  className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col justify-center"*/}
-          {/*>*/}
-          <div className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col justify-center">
-            <Component key={router.asPath} {...pageProps} />
-          </div>
-          {/*</motion.div>*/}
-          {/*</AnimatePresence>*/}
+          <AnimatePresence initial={false} mode="wait">
+            <motion.div
+              key={router.asPath}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col"
+            >
+              <Component key={router.asPath} {...pageProps} />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </ToastProvider>
-    </SessionProvider>
+    </JotaiProvider>
   );
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const userAgent = context.req?.headers["user-agent"];
+  if (!userAgent) return {};
+  return {
+    props: {
+      userAgent: {
+        isMobile: /mobile/i.test(userAgent),
+        isTablet: /tablet/i.test(userAgent),
+      },
+    },
+  };
+}
 
 export default api.withTRPC(MyApp);

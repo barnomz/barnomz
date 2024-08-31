@@ -63,7 +63,7 @@ const BInput = ({
   };
 
   const wrapperClasses = cn(
-    "bg-primary px-3 flex items-center gap-x-2 rounded",
+    "bg-primary px-3 flex items-center gap-x-2 rounded-lg",
     "focus-within:ring-secondary focus-within:ring-[1px] transition-all duration-200",
     "h-[46px] sm:h-[57px]",
     {

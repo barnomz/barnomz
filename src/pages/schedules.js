@@ -2,23 +2,10 @@ import Schedule from "@/components/schedule/Schedule";
 import ScheduleTabs from "@/components/schedule/ScheduleTabs";
 import Head from "next/head";
 import CourseSelector from "@/components/schedule/CourseSelector";
-import { useEffect, useState } from "react";
 import { createTRPCContext } from "@/server/api/trpc";
 import { createCaller } from "@/server/api/root";
-import { getServerAuthSession } from "@/server/auth";
-import { courseMapper } from "@/utils/mappers.js";
 
-export default function SchedulesPage({ initialSchedules, colleges }) {
-  const [schedules, setSchedules] = useState(initialSchedules);
-  const [currentScheduleId, setCurrentScheduleId] = useState(schedules[0]?.id);
-  const [courses, setCourses] = useState(schedules[0]?.courses || []);
-
-  useEffect(() => {
-    setCourses(
-      schedules.find((s) => s.id === currentScheduleId)?.courses || [],
-    );
-  }, [currentScheduleId, schedules]);
-
+export default function SchedulesPage({ colleges }) {
   return (
     <>
       <Head>
@@ -28,30 +15,11 @@ export default function SchedulesPage({ initialSchedules, colleges }) {
         <div className="flex max-w-[98.875rem] grow gap-4">
           <div className="flex grow flex-col justify-between rounded-xl bg-primary/50 p-4 backdrop-blur">
             <h1 className="text-2xl font-bold">برنامه هفتگی کلاس‌ها</h1>
-            <ScheduleTabs
-              currentScheduleId={currentScheduleId}
-              schedules={schedules.map((s) => ({
-                id: s.id,
-              }))}
-              onChange={setCurrentScheduleId}
-              setSchedules={setSchedules}
-            />
-            <Schedule
-              courses={courses}
-              schedules={schedules}
-              setSchedules={setSchedules}
-              currentScheduleId={currentScheduleId}
-              setCurrentScheduleId={setCurrentScheduleId}
-            />
+            <ScheduleTabs />
+            <Schedule />
           </div>
 
-          <CourseSelector
-            colleges={colleges}
-            courses={courses}
-            currentScheduleId={currentScheduleId}
-            setCoursesOfSchedule={setCourses}
-            setSchedules={setSchedules}
-          />
+          <CourseSelector colleges={colleges} />
         </div>
       </div>
     </>
@@ -59,34 +27,11 @@ export default function SchedulesPage({ initialSchedules, colleges }) {
 }
 
 export async function getServerSideProps(context) {
-  const session = await getServerAuthSession(context);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/login",
-        permanent: false,
-      },
-    };
-  }
-
   const trpc = createCaller(await createTRPCContext(context));
-
-  const schedulesPromise = trpc.schedule.list();
-  const collegesPromise = trpc.college.getAllDepartments();
-
-  const [schedules, colleges] = await Promise.all([
-    schedulesPromise,
-    collegesPromise,
-  ]);
-
-  schedules.forEach((schedule) => {
-    schedule.courses = schedule.courses.map(courseMapper);
-  });
+  const colleges = await trpc.college.getAllDepartments();
 
   return {
     props: {
-      initialSchedules: schedules,
       colleges: colleges,
     },
   };

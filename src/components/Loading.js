@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { cn } from "../utils/helpers.js";
+import { cn } from "../utils/helpers";
 
 const loadingContainer = {
   width: "4rem",

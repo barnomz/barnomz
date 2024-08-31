@@ -1,6 +1,6 @@
 import { Head, Html, Main, NextScript } from "next/document";
 
-export default function Document() {
+function Document(props) {
   return (
     <Html lang="fa" className="bg-primary-dark">
       <Head>
@@ -34,10 +34,12 @@ export default function Document() {
           type="font/woff2"
         />
       </Head>
-      <body dir={"rtl"}>
+      <body dir="rtl">
         <Main />
         <NextScript />
       </body>
     </Html>
   );
 }
+
+export default Document;
