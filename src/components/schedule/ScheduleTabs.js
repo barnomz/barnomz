@@ -16,6 +16,13 @@ export default function ScheduleTabs({ showAddButton = true }) {
   );
 
   const createNewSchedule = () => {
+    if (schedules.length >= 5) {
+      toast.open({
+        message: "حداکثر ۵ برنامه می‌توانید داشته باشید.",
+        type: "error",
+      });
+      return;
+    }
     setSchedules((draft) => {
       const newId =
         draft.length > 0 ? Math.max(...draft.map((s) => s.id)) + 1 : 0;
