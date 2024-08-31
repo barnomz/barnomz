@@ -36,11 +36,11 @@ export default function Schedule() {
 
   const handleEventMouseEnter = (clickInfo) => {
     const course = clickInfo.event.extendedProps;
-    const { top, left } = clickInfo.el.getBoundingClientRect();
+    const { top, width, left } = clickInfo.el.getBoundingClientRect();
     setTooltipContent(<TooltipContent course={course} inSchedule />);
     setTooltipPosition({
       top: top - 205,
-      left: left - 420,
+      left: left - 2.69 * width,
     });
   };
 
