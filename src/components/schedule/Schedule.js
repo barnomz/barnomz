@@ -13,7 +13,7 @@ import DeleteScheduleButton from "@/components/schedule/DeleteScheduleButton";
 import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
 import { useAtomValue } from "jotai";
 import { useImmerAtom } from "jotai-immer";
-import TooltipContent from "@/components/schedule/TooltipContent.js";
+import TooltipContent from "@/components/schedule/TooltipContent";
 
 export default function Schedule() {
   const toast = useToast();

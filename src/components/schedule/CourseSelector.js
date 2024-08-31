@@ -9,7 +9,7 @@ import Tooltip from "@/components/dls/Tooltip";
 import { useAtomValue } from "jotai";
 import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
 import { useImmerAtom } from "jotai-immer";
-import TooltipContent from "@/components/schedule/TooltipContent.js";
+import TooltipContent from "@/components/schedule/TooltipContent";
 
 export default function CourseSelector({ colleges, mode = "search" }) {
   if (!["search", "filter"].includes(mode)) {
