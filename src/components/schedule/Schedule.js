@@ -38,7 +38,7 @@ export default function Schedule() {
     const event = clickInfo.jsEvent;
     const course = clickInfo.event.extendedProps;
     const { top, left } = event.target.getBoundingClientRect();
-    setTooltipContent(<TooltipContent course={course} />);
+    setTooltipContent(<TooltipContent course={course} inSchedule />);
     setTooltipPosition({
       top: top - 170,
       left: left - 400,

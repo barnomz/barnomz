@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
 import { useAtomValue } from "jotai";
 
-const TooltipContent = ({ course }) => {
+const TooltipContent = ({ course, inSchedule = false }) => {
   const schedules = useAtomValue(schedulesAtom);
   const currentScheduleId = useAtomValue(currentScheduleIdAtom);
   const courses = useMemo(() => {
@@ -11,15 +11,21 @@ const TooltipContent = ({ course }) => {
     return schedule ? schedule.courses : [];
   }, [schedules, currentScheduleId]);
 
-  const examConflict = courses.some(
-    (c) =>
-      c.finalExamDate &&
-      course.finalExamDate &&
-      c.finalExamTime &&
-      course.finalExamTime &&
-      c.finalExamDate === course.finalExamDate &&
-      c.finalExamTime === course.finalExamTime,
-  );
+  const isInSchedule = courses
+    .filter((c) => !c.mode)
+    .find((c) => c.id === course.id);
+
+  const examConflict = courses
+    .filter((c) => !c.mode)
+    .some(
+      (c) =>
+        !!c.finalExamDate &&
+        !!course.finalExamDate &&
+        !!c.finalExamTime &&
+        !!course.finalExamTime &&
+        c.finalExamDate === course.finalExamDate &&
+        c.finalExamTime === course.finalExamTime,
+    );
 
   const getCourseFinalExamDateAndTime = (course) => {
     const jalaliDateTimeString = `${course.finalExamDate} ${course.finalExamTime}`;
@@ -36,29 +42,25 @@ const TooltipContent = ({ course }) => {
   };
 
   return (
-    <>
+    <div className="flex w-full flex-col gap-1">
       <span className="line-clamp-1 text-sm font-bold">{`${course.courseName} (${course.group}-${course.courseCode})`}</span>
-      <br />
       <span>{`استاد: ${course.presentedBy}`}</span>
-      <br />
       <span>{`ظرفیت: ${course.numberOfCapacity}`}</span>
-      <br />
       <span>{`تعداد ثبت‌نامی: ${course.numberOfEnrolled}`}</span>
       {course.finalExamTime && course.finalExamDate && (
-        <>
-          <br />
-          <span>{`تاریخ امتحان: ${getCourseFinalExamDateAndTime(course)}`}</span>
-        </>
+        <span>{`تاریخ امتحان: ${getCourseFinalExamDateAndTime(course)}`}</span>
       )}
-      {examConflict && (
-        <>
-          <br />
-          <div className="pt-2 text-warning">
-            تلاقی امتحان با دروس انتخابی دارد.
-          </div>
-        </>
+      {!inSchedule && examConflict && !isInSchedule && (
+        <div className="pt-2 text-warning">
+          تلاقی امتحان با دروس انتخابی دارد.
+        </div>
       )}
-    </>
+      {isInSchedule && (
+        <div className="pt-2 text-success">
+          این درس به برنامه اضافه شده است.
+        </div>
+      )}
+    </div>
   );
 };
 
