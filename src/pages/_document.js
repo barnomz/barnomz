@@ -4,6 +4,9 @@ function Document(props) {
   return (
     <Html lang="fa" className="bg-primary-dark">
       <Head>
+        {(props.userAgent.isMobile || props.userAgent.isTablet) && (
+          <meta name="viewport" content="width=1280" />
+        )}
         <link rel="shortcut icon" href="/images/barnomz-logo.svg" />
         <link
           rel="preload"
@@ -41,5 +44,18 @@ function Document(props) {
     </Html>
   );
 }
+
+Document.getInitialProps = async (ctx) => {
+  const initialProps = await ctx.defaultGetInitialProps(ctx);
+  const userAgent = ctx.req.headers["user-agent"];
+
+  return {
+    ...initialProps,
+    userAgent: {
+      isMobile: /mobile/i.test(userAgent),
+      isTablet: /tablet/i.test(userAgent),
+    },
+  };
+};
 
 export default Document;

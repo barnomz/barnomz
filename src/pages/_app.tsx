@@ -9,29 +9,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { Provider as JotaiProvider } from "jotai";
-import Head from "next/head";
-import { GetServerSidePropsContext } from "next";
 
 config.autoAddCss = false;
 
-type AppTypeArguments = {
-  userAgent:
-    | {
-        isMobile: boolean;
-        isTablet: boolean;
-      }
-    | undefined;
-};
-
-const MyApp: AppType<AppTypeArguments> = ({ Component, pageProps, router }) => {
+const MyApp: AppType = ({ Component, pageProps, router }) => {
   return (
     <JotaiProvider>
       <ToastProvider>
-        <Head>
-          {(pageProps.userAgent?.isMobile || pageProps.userAgent?.isTablet) && (
-            <meta name="viewport" content="width=1280" />
-          )}
-        </Head>
         <div className="min-h-screen">
           <NavBar />
           <AnimatePresence initial={false} mode="wait">
@@ -51,18 +35,5 @@ const MyApp: AppType<AppTypeArguments> = ({ Component, pageProps, router }) => {
     </JotaiProvider>
   );
 };
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const userAgent = context.req?.headers["user-agent"];
-  if (!userAgent) return {};
-  return {
-    props: {
-      userAgent: {
-        isMobile: /mobile/i.test(userAgent),
-        isTablet: /tablet/i.test(userAgent),
-      },
-    },
-  };
-}
 
 export default api.withTRPC(MyApp);
