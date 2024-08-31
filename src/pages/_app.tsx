@@ -25,11 +25,9 @@ const MyApp: AppType = ({ Component, pageProps, router }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col justify-center"
+              className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col"
             >
-              <div className="flex h-full min-h-[calc(100vh-3.75rem)] flex-col justify-center">
-                <Component key={router.asPath} {...pageProps} />
-              </div>
+              <Component key={router.asPath} {...pageProps} />
             </motion.div>
           </AnimatePresence>
         </div>

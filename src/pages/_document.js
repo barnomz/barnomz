@@ -1,9 +1,12 @@
 import { Head, Html, Main, NextScript } from "next/document";
 
-export default function Document() {
+function Document(props) {
   return (
     <Html lang="fa" className="bg-primary-dark">
       <Head>
+        {(props.userAgent.isMobile || props.userAgent.isTablet) && (
+          <meta name="viewport" content="width=1280" />
+        )}
         <link rel="shortcut icon" href="/images/barnomz-logo.svg" />
         <link
           rel="preload"
@@ -34,10 +37,27 @@ export default function Document() {
           type="font/woff2"
         />
       </Head>
-      <body dir={"rtl"}>
+      <body dir="rtl">
         <Main />
         <NextScript />
       </body>
     </Html>
   );
 }
+
+Document.getInitialProps = async (ctx) => {
+  const initialProps = await ctx.defaultGetInitialProps(ctx);
+  const userAgent = ctx.req
+    ? ctx.req.headers["user-agent"]
+    : navigator.userAgent;
+
+  return {
+    ...initialProps,
+    userAgent: {
+      isMobile: /mobile/i.test(userAgent),
+      isTablet: /tablet/i.test(userAgent),
+    },
+  };
+};
+
+export default Document;
