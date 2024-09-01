@@ -36,11 +36,15 @@ export default function Schedule() {
 
   const handleEventMouseEnter = (clickInfo) => {
     const course = clickInfo.event.extendedProps;
-    const { top, width, left } = clickInfo.el.getBoundingClientRect();
+    const rect = clickInfo.el.getBoundingClientRect();
+    const calendarContainer = document.querySelector(".fc");
+    const calendarRect = calendarContainer.getBoundingClientRect();
+    const tooltipX = rect.left - calendarRect.left + window.scrollX - 15;
+    const tooltipY = rect.top - calendarRect.top + window.scrollY;
     setTooltipContent(<TooltipContent course={course} inSchedule />);
     setTooltipPosition({
-      top: top - 205,
-      left: left - 2.69 * width,
+      left: tooltipX,
+      top: tooltipY,
     });
   };
 
