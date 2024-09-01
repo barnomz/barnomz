@@ -25,7 +25,7 @@ export default function CollegeCombobox({
   return (
     <Combobox value={selectedCollege} onChange={handleSelect}>
       <div className="relative mt-1">
-        <div className="relative w-full cursor-default overflow-hidden rounded bg-primary text-left shadow-md focus-within:ring-1 focus-within:ring-secondary">
+        <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-primary text-left shadow-md focus-within:ring-1 focus-within:ring-secondary">
           <Combobox.Button className="absolute inset-y-0 left-0 flex items-center pl-2">
             <FontAwesomeIcon
               icon={faChevronCircleDown}
