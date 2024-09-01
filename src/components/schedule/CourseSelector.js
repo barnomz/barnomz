@@ -145,7 +145,7 @@ export default function CourseSelector({ colleges, mode = "search" }) {
           filteredCourses.map((course, i) => (
             <div
               key={i}
-              className="relative flex cursor-pointer select-none items-center justify-between rounded bg-grey-300/60 px-2 py-1 text-primary-darker transition-all hover:bg-grey-300"
+              className="relative flex cursor-pointer select-none items-center justify-between rounded bg-grey-300/75 px-2 py-1 text-primary-darker transition-all hover:bg-grey-300"
               onMouseEnter={(event) => handleMouseEnter(course, event)}
               onMouseLeave={() => handleMouseLeave(course)}
               onClick={() => handleAddCourseToSchedule(course)}
