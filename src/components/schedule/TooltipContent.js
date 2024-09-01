@@ -49,6 +49,7 @@ const TooltipContent = ({ course, inSchedule = false }) => {
       <span>{`ظرفیت: ${course.numberOfCapacity}`}</span>
       <span>{`تعداد ثبت‌نامی: ${course.numberOfEnrolled}`}</span>
       <span>{`تاریخ امتحان: ${getCourseFinalExamDateAndTime(course) || "-"}`}</span>
+      {course.info && <span>{`توضیحات: ${course.info || "-"}`}</span>}
       {!inSchedule && examConflict && !isInSchedule && (
         <div className="pt-2 text-warning">
           تلاقی امتحان با دروس انتخابی دارد.
