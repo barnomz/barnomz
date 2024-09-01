@@ -28,7 +28,7 @@ const TooltipContent = ({ course, inSchedule = false }) => {
     );
 
   const getCourseFinalExamDateAndTime = (course) => {
-    if (!course.finalExamTime || course.finalExamDate) return null;
+    if (!course.finalExamTime || !course.finalExamDate) return null;
     const jalaliDateTimeString = `${course.finalExamDate} ${course.finalExamTime}`;
     const jDateTime = moment(jalaliDateTimeString, "jYYYY/jMM/jDD HH:mm");
     const formatter = new Intl.DateTimeFormat("fa-IR", {
