@@ -42,3 +42,7 @@ export function isMobileOrTablet(userAgent) {
     isTablet,
   };
 }
+
+export function escapeRegex(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
