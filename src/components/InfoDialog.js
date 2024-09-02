@@ -49,11 +49,12 @@ export default function InfoDialog({ isOpen, onClose }) {
                   as="h3"
                   className="mt-4 w-full text-lg font-medium text-white"
                 >
-                  تیم توسعه
+                  تیم برنومز
                 </Dialog.Title>
                 <ul className="prose-invert mt-2">
                   <li> - مهدی سعادت بخت</li>
                   <li> - هیربد بهنام</li>
+                  <li> - سهیل نظری</li>
                 </ul>
                 <p className="mt-4 text-start text-sm text-grey-200">
                   اگر پیشنهاد، ایراد یا هر موضوع دیگری دارید، می‌توانید از طریق
