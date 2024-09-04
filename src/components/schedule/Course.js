@@ -1,6 +1,21 @@
-const Course = ({ course }) => {
+import { cn } from "@/utils/helpers";
+
+const Course = ({ course, ...props }) => {
+  const mode = course.mode || "default";
+  if (!["default", "hover"].includes(mode)) {
+    throw new Error("The mode should be either default or hover.");
+  }
+
+  const wrapperClasses = cn(
+    "flex h-full rounded-lg w-full flex-col items-center justify-center !cursor-pointer border-primary-lighter border-[1px] text-primary-darker",
+    "gap-1  py-2",
+    mode === "hover" && "bg-grey-300",
+    mode === "default" && "bg-tertiary-dark",
+    props.className,
+  );
+
   return (
-    <div className="flex h-full w-full !cursor-pointer items-center justify-center rounded-lg border-[1px] border-primary-lighter bg-tertiary-dark text-primary-darker">
+    <div className={wrapperClasses}>
       <div className="my-auto w-full p-1 text-center">
         <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs">
           {course.courseCode}-{course.group}

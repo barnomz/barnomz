@@ -26,8 +26,8 @@ export function convertEnglishNumberToPersian(number) {
   );
 }
 
-export function getDaysOfWeek(days) {
-  return days.map((day) => (day === 0 ? 6 : day - 1));
+export function getDayOfWeek(day) {
+  return day === 0 ? 6 : day - 1;
 }
 
 export function isMobileOrTablet(userAgent) {

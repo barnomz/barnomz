@@ -46,9 +46,16 @@ model Course {
     grade                String
     presentedBy          Professor   @relation(fields: [presentedById], references: [id])
     department           Department? @relation(fields: [departmentId], references: [code])
-    daysOfWeek           Int[]
-    startTime            String?
-    endTime              String?
+    courseSessions       CourseSession[]  // Relation to CourseSession model
 
     @@unique([courseCode, group])
+}
+
+model CourseSession {
+    id         Int     @id @default(autoincrement())
+    courseId   Int
+    course     Course  @relation(fields: [courseId], references: [id])
+    dayOfWeek  Int
+    startTime  String
+    endTime    String
 }

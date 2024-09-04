@@ -13,6 +13,7 @@ export const collegeRouter = createTRPCRouter({
         where: { departmentId: input.departmentCode },
         include: {
           presentedBy: true,
+          courseSessions: true,
         },
       });
     }),

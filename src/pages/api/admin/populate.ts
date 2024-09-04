@@ -3,6 +3,12 @@ import { db } from "@/server/db";
 import axios from "axios";
 import { env } from "@/env";
 
+type Session = {
+  DayOfWeek: number;
+  StartTime: string;
+  EndTime: string;
+};
+
 type Course = {
   Code: string;
   Group: number;
@@ -13,9 +19,7 @@ type Course = {
   Units: number;
   ExamDate: string | null;
   ExamTime: string | null;
-  DaysOfWeek: number[];
-  StartTime: string | null;
-  EndTime: string | null;
+  Sessions: Session[];
   Info: string | null;
   Department: string;
   DepartmentCode: number;
@@ -79,7 +83,7 @@ export const populate = async (): Promise<boolean> => {
       }
 
       // Step 5: Create or update the Course
-      await db.course.upsert({
+      const course = await db.course.upsert({
         where: {
           courseCode_group: {
             courseCode: courseCode,
@@ -92,9 +96,6 @@ export const populate = async (): Promise<boolean> => {
           group: courseData.Group,
           finalExamDate: courseData.ExamDate ? courseData.ExamDate : null,
           finalExamTime: courseData.ExamTime ? courseData.ExamTime : null,
-          daysOfWeek: courseData.DaysOfWeek,
-          startTime: courseData.StartTime ? courseData.StartTime : null,
-          endTime: courseData.EndTime ? courseData.EndTime : null,
           numberOfCapacity: courseData.Capacity,
           numberOfEnrolled: courseData.Registered,
           info: courseData.Info,
@@ -109,9 +110,6 @@ export const populate = async (): Promise<boolean> => {
           group: courseData.Group,
           finalExamDate: courseData.ExamDate ? courseData.ExamDate : null,
           finalExamTime: courseData.ExamTime ? courseData.ExamTime : null,
-          daysOfWeek: courseData.DaysOfWeek,
-          startTime: courseData.StartTime ? courseData.StartTime : null,
-          endTime: courseData.EndTime ? courseData.EndTime : null,
           numberOfCapacity: courseData.Capacity,
           numberOfEnrolled: courseData.Registered,
           numberOfPetitioners: 0,
@@ -130,6 +128,24 @@ export const populate = async (): Promise<boolean> => {
           warning: "",
         },
       });
+
+      // Step 6: Create or update the CourseSessions
+      // Delete existing course sessions for the course (if necessary)
+      await db.courseSession.deleteMany({
+        where: { courseId: course.id },
+      });
+
+      // Insert the new course sessions
+      for (const sessionData of courseData.Sessions) {
+        await db.courseSession.create({
+          data: {
+            courseId: course.id,
+            dayOfWeek: sessionData.DayOfWeek,
+            startTime: sessionData.StartTime,
+            endTime: sessionData.EndTime,
+          },
+        });
+      }
     }
 
     console.log("Database populated successfully");

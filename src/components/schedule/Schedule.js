@@ -29,8 +29,38 @@ export default function Schedule() {
     return schedule ? schedule.courses : [];
   }, [schedules, currentScheduleId]);
 
+  const eventCourses = useMemo(() => {
+    return courses.reduce((acc, course) => {
+      const sessions = course.sessions.map((session) => ({
+        id: `${course.id}-${session.dayOfWeek}-${session.startTime}`,
+        courseName: course.courseName,
+        courseCode: course.courseCode,
+        unitCount: course.unitCount,
+        presentedById: course.presentedById,
+        group: course.group,
+        locationId: course.locationId,
+        finalExamDate: course.finalExamDate,
+        finalExamTime: course.finalExamTime,
+        numberOfPetitioners: course.numberOfPetitioners,
+        numberOfCapacity: course.numberOfCapacity,
+        numberOfEnrolled: course.numberOfEnrolled,
+        departmentId: course.departmentId,
+        info: course.info,
+        warning: course.warning,
+        grade: course.grade,
+        presentedBy: course.presentedBy,
+        daysOfWeek: [session.dayOfWeek],
+        startTime: session.startTime,
+        endTime: session.endTime,
+        mode: course.mode,
+      }));
+
+      return acc.concat(sessions);
+    }, []);
+  }, [courses]);
+
   const handleEventClick = (clickInfo) => {
-    setCourseIdToBeDeleted(Number(clickInfo.event.id));
+    setCourseIdToBeDeleted(Number(clickInfo.event.id.split("-")[0]));
     setIsOpen(true);
   };
 
@@ -87,7 +117,7 @@ export default function Schedule() {
         eventOverlap={false}
         slotEventOverlap={true}
         weekends
-        events={courses}
+        events={eventCourses}
         eventClick={handleEventClick}
         eventMouseEnter={handleEventMouseEnter}
         eventMouseLeave={handleEventMouseLeave}

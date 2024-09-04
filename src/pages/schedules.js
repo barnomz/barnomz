@@ -4,8 +4,29 @@ import Head from "next/head";
 import CourseSelector from "@/components/schedule/CourseSelector";
 import { createTRPCContext } from "@/server/api/trpc";
 import { createCaller } from "@/server/api/root";
+import { schedulesAtom } from "@/atoms";
+import { useEffect } from "react";
+import { useSetImmerAtom } from "jotai-immer";
 
 export default function SchedulesPage({ colleges }) {
+  const setSchedules = useSetImmerAtom(schedulesAtom);
+
+  useEffect(() => {
+    setSchedules((draft) => {
+      draft.forEach((s) => {
+        s.courses.forEach((c) => {
+          c.sessions = c.daysOfWeek
+            ? c.daysOfWeek.map((day) => ({
+                dayOfWeek: day,
+                startTime: c.startTime,
+                endTime: c.endTime,
+              }))
+            : c.sessions;
+        });
+      });
+    });
+  }, []);
+
   return (
     <>
       <Head>
