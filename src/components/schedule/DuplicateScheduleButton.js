@@ -35,7 +35,7 @@ export default function DuplicateScheduleButton() {
     });
 
     toast.open({
-      message: "برنامه با موفقیت کپی شد.",
+      message: "برنامه با موفقیت کلون شد.",
       type: "success",
     });
   };
