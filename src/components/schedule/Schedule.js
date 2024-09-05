@@ -9,11 +9,13 @@ import DeleteCourseDialogConfirmation from "@/components/schedule/DeleteCourseDi
 import { useMemo, useState } from "react";
 import { useToast } from "@/components/dls/toast/ToastService";
 import Tooltip from "@/components/dls/Tooltip";
-import DeleteScheduleButton from "@/components/schedule/DeleteScheduleButton";
 import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
 import { useAtomValue } from "jotai";
 import { useImmerAtom } from "jotai-immer";
 import TooltipContent from "@/components/schedule/TooltipContent";
+// import ShareScheduleImageButton from "@/components/schedule/ShareScheduleImageButton";
+import DuplicateScheduleButton from "@/components/schedule/DuplicateScheduleButton";
+import DeleteScheduleButton from "@/components/schedule/DeleteScheduleButton";
 
 export default function Schedule() {
   const toast = useToast();
@@ -162,7 +164,11 @@ export default function Schedule() {
         }}
       />
 
-      <DeleteScheduleButton />
+      <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2">
+        {/*<ShareScheduleImageButton />*/}
+        <DuplicateScheduleButton />
+        <DeleteScheduleButton />
+      </div>
       <Tooltip content={tooltipContent} position={tooltipPosition} />
     </div>
   );

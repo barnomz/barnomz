@@ -38,7 +38,7 @@ export default function DeleteScheduleButton() {
   return (
     <div className="group relative">
       <button
-        className="fixed bottom-4 left-4 z-50 flex items-center justify-center rounded-full bg-error-500 p-3 text-white shadow-lg transition-all duration-300 hover:opacity-85"
+        className="z-50 flex items-center justify-center rounded-full bg-error-500 p-3 text-white shadow-lg transition-all duration-300 hover:opacity-85"
         onClick={removeSchedule}
       >
         <FontAwesomeIcon icon={faTrash} />
