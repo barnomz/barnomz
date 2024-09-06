@@ -10,7 +10,7 @@ function classNames(...classes) {
 const navigations = [
   {
     id: 1,
-    title: "برنومز",
+    title: "برنامه هفتگی",
     link: "/schedules",
   },
   // {
@@ -20,7 +20,7 @@ const navigations = [
   // },
   {
     id: 3,
-    title: "امتحانات",
+    title: "لیست دروس",
     link: "/exams",
   },
   // {
