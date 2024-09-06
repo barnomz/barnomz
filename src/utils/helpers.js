@@ -43,6 +43,11 @@ export function isMobileOrTablet(userAgent) {
   };
 }
 
-export function escapeRegex(string) {
+function escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+
+export function normalizeQuery(string) {
+  return escapeRegex(string).toLowerCase();
+}
+

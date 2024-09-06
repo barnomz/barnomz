@@ -10,7 +10,7 @@ import { useAtomValue } from "jotai";
 import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
 import { useImmerAtom } from "jotai-immer";
 import TooltipContent from "@/components/schedule/TooltipContent";
-import { escapeRegex } from "@/utils/helpers";
+import { normalizeQuery } from "@/utils/helpers";
 
 export default function CourseSelector({ colleges, mode = "search" }) {
   if (!["search", "filter"].includes(mode)) {
@@ -57,16 +57,16 @@ export default function CourseSelector({ colleges, mode = "search" }) {
     }
   }, [fetchedCourses]);
 
-  const escapedQuery = escapeRegex(query);
+  const normalizedQuery = normalizeQuery(query);
 
   const filteredCourses =
-    escapedQuery === ""
+    normalizedQuery === ""
       ? coursesOfColleges
       : coursesOfColleges.filter(
           (course) =>
-            course.courseCode.match(escapedQuery) ||
-            course.courseName.match(escapedQuery) ||
-            course.presentedBy.match(escapedQuery),
+            course.courseCode.match(normalizedQuery) ||
+            course.normalizedCourseName.match(normalizedQuery) ||
+            course.presentedBy.match(normalizedQuery),
         );
 
   const handleFetchCollegeCourses = async (college) => {
