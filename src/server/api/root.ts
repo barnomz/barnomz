@@ -1,4 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
+import { courseRouter } from "@/server/api/routers/course";
 import { collegeRouter } from "@/server/api/routers/college";
 
 /**
@@ -7,6 +8,7 @@ import { collegeRouter } from "@/server/api/routers/college";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  course: courseRouter,
   college: collegeRouter,
 });
 
