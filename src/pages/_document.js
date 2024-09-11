@@ -1,5 +1,5 @@
 import { Head, Html, Main, NextScript } from "next/document";
-import { isMobileOrTablet } from "@/utils/helpers.js";
+import { isMobileOrTablet } from "@/utils/helpers";
 
 function Document(props) {
   return (
