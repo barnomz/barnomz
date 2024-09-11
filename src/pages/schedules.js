@@ -5,27 +5,42 @@ import CourseSelector from "@/components/schedule/CourseSelector";
 import { createTRPCContext } from "@/server/api/trpc";
 import { createCaller } from "@/server/api/root";
 import { schedulesAtom } from "@/atoms";
-import { useEffect } from "react";
-import { useSetImmerAtom } from "jotai-immer";
+import { useEffect, useState } from "react";
+import { useImmerAtom } from "jotai-immer";
+import { api } from "@/utils/api";
+import { courseMapper } from "@/utils/mappers";
 
 export default function SchedulesPage({ colleges }) {
-  const setSchedules = useSetImmerAtom(schedulesAtom);
+  const [schedules, setSchedules] = useImmerAtom(schedulesAtom);
+  const [coursesFetched, setCoursesFetched] = useState(false);
+
+  const courseIds = schedules.flatMap((schedule) =>
+    schedule.courses.map((course) => course.id),
+  );
+
+  const { data: fetchedCourses, isSuccess } =
+    api.course.getCoursesByIds.useQuery(
+      { courseIds },
+      { enabled: courseIds.length > 0 && !coursesFetched },
+    );
 
   useEffect(() => {
-    setSchedules((draft) => {
-      draft.forEach((s) => {
-        s.courses.forEach((c) => {
-          c.sessions = c.daysOfWeek
-            ? c.daysOfWeek.map((day) => ({
-                dayOfWeek: day,
-                startTime: c.startTime,
-                endTime: c.endTime,
-              }))
-            : c.sessions;
+    if (isSuccess && fetchedCourses) {
+      setSchedules((draft) => {
+        draft.forEach((schedule, sI) => {
+          schedule.courses.forEach((course, cI) => {
+            const updatedCourse = fetchedCourses.find(
+              (fc) => fc.id === course.id,
+            );
+            if (updatedCourse) {
+              draft[sI].courses[cI] = courseMapper(updatedCourse) ?? course;
+            }
+          });
         });
       });
-    });
-  }, []);
+      setCoursesFetched(true);
+    }
+  }, [fetchedCourses]);
 
   return (
     <>
@@ -39,7 +54,6 @@ export default function SchedulesPage({ colleges }) {
             <ScheduleTabs />
             <Schedule />
           </div>
-
           <CourseSelector colleges={colleges} />
         </div>
       </div>
@@ -53,7 +67,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      colleges: colleges,
+      colleges,
     },
   };
 }
