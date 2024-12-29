@@ -28,8 +28,18 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# This will do the trick, use the corresponding env file for each environment.
-COPY .env.prod .env.production
+
+# Declare build-time arguments
+ARG DATABASE_URL
+ARG SCRAPER_URL
+ARG EDU_USERNAME
+ARG EDU_PASSWORD
+
+# Set environment variables from the build arguments
+ENV DATABASE_URL=$DATABASE_URL
+ENV SCRAPER_URL=$SCRAPER_URL
+ENV EDU_USERNAME=$EDU_USERNAME
+ENV EDU_PASSWORD=$EDU_PASSWORD
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
@@ -45,15 +55,16 @@ RUN \
 FROM base AS runner
 WORKDIR /app
 
+# Set production environment variables
 ENV NODE_ENV production
-
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/.env.prod ./.env
 COPY --from=builder /app/prisma ./prisma
 
 COPY --from=builder /app/.next/standalone ./
@@ -71,8 +82,6 @@ RUN chmod +x ./entrypoint.sh
 RUN apk add curl
 
 EXPOSE 3000
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
 
-# Use the entrypoint script to start Supercronic and your app
+# Use entrypoint to start Supercronic and the app
 ENTRYPOINT ["/app/entrypoint.sh"]
