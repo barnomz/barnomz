@@ -5,7 +5,7 @@ FROM node:20-alpine AS base
 FROM base AS deps
 
 # Install required packages including Python and build tools
-RUN apk add --no-cache libc6-compat openssl openssl-dev python3 make g++
+RUN apk add --no-cache libc6-compat openssl python3 make g++
 
 WORKDIR /app
 
@@ -28,6 +28,8 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+RUN apk add --no-cache openssl
 
 # Declare build-time arguments
 ARG DATABASE_URL
@@ -54,6 +56,8 @@ RUN \
 
 FROM base AS runner
 WORKDIR /app
+
+RUN apk add --no-cache openssl
 
 # Set production environment variables
 ENV NODE_ENV production
