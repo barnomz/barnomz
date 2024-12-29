@@ -5,7 +5,7 @@ FROM node:20-alpine AS base
 FROM base AS deps
 
 # Install required packages including Python and build tools
-RUN apk add --no-cache libc6-compat openssl python3 make g++
+RUN apk add --no-cache libc6-compat openssl openssl-dev python3 make g++
 
 WORKDIR /app
 
