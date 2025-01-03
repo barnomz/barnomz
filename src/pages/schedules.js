@@ -34,6 +34,8 @@ export default function SchedulesPage({ colleges }) {
             );
             if (updatedCourse) {
               draft[sI].courses[cI] = courseMapper(updatedCourse) ?? course;
+            } else {
+              draft[sI].courses[cI] = { ...course, enabled: false };
             }
           });
         });

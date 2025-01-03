@@ -29,7 +29,7 @@ model Professor {
 }
 
 model Course {
-    id                   Int         @id @default(autoincrement())
+    id                   Int            @id @default(autoincrement())
     courseName           String
     courseCode           String
     unitCount            Int
@@ -45,11 +45,17 @@ model Course {
     info                 String?
     warning              String
     grade                String
-    presentedBy          Professor   @relation(fields: [presentedById], references: [id])
-    department           Department? @relation(fields: [departmentId], references: [code])
-    courseSessions       CourseSession[]  // Relation to CourseSession model
+    presentedBy          Professor      @relation(fields: [presentedById], references: [id])
+    department           Department?    @relation(fields: [departmentId], references: [code])
+    courseSessions       CourseSession[]
 
-    @@unique([courseCode, group])
+    year                 Int            @default(1403)
+    semester             Int            @default(1)
+
+    @@unique([courseCode, group, year, semester])
+
+    @@index([departmentId])
+    @@index([year, semester])
 }
 
 model CourseSession {

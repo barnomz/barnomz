@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/server/db";
 import axios from "axios";
 import { env } from "@/env";
+import { getYearAndSemester } from "@/utils/helpers";
 
 type Session = {
   DayOfWeek: number;
@@ -46,6 +47,8 @@ export const populate = async (): Promise<boolean> => {
     // Step 1: Fetch data from the API
     const response = await axios.get<CoursesResponse>(env.SCRAPER_URL);
     const courses = response.data;
+
+    const { year, semester } = getYearAndSemester();
 
     // Step 2: Iterate over each course
     for (const courseCodeGroup in courses) {
@@ -126,6 +129,8 @@ export const populate = async (): Promise<boolean> => {
           },
           grade: courseData.Grade,
           warning: "",
+          year: year,
+          semester: semester,
         },
       });
 

@@ -158,6 +158,11 @@ export default function CourseSelector({ colleges, mode = "search" }) {
             </div>
           ))
         )}
+        {!isLoading &&
+          filteredCourses.length === 0 &&
+          selectedCollege !== null && (
+            <div className="text-center">درسی یافت نشد...</div>
+          )}
       </div>
 
       <Tooltip content={tooltipContent} position={tooltipPosition} />

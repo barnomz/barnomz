@@ -28,7 +28,11 @@ export default function Schedule() {
 
   const courses = useMemo(() => {
     const schedule = schedules.find((s) => s.id === currentScheduleId);
-    return schedule ? schedule.courses : [];
+    return schedule
+      ? schedule.courses.filter(
+          (c) => typeof c.enabled === "undefined" || c.enabled !== false,
+        )
+      : [];
   }, [schedules, currentScheduleId]);
 
   const eventCourses = useMemo(() => {

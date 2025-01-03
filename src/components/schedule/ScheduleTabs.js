@@ -64,7 +64,7 @@ export default function ScheduleTabs({ showAddButton = true }) {
             icon={faPlus}
             iconSize="lg"
             color="primary-light"
-            className="h-[2.5rem] w-[2.5rem] rounded-lg"
+            className="size-[36px] rounded-lg"
             onClick={createNewSchedule}
           />
         )}
