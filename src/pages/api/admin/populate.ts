@@ -88,9 +88,11 @@ export const populate = async (): Promise<boolean> => {
       // Step 5: Create or update the Course
       const course = await db.course.upsert({
         where: {
-          courseCode_group: {
+          courseCode_group_year_semester: {
             courseCode: courseCode,
             group: courseData.Group,
+            year: year,
+            semester: semester,
           },
         },
         update: {
