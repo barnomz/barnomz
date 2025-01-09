@@ -10,9 +10,6 @@ export const collegeRouter = createTRPCRouter({
     .input(z.object({ departmentCode: z.string() }))
     .query(async ({ ctx, input }) => {
       const result = await ctx.db.course.findFirst({
-        where: {
-          departmentId: input.departmentCode,
-        },
         select: {
           year: true,
           semester: true,
