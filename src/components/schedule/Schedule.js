@@ -6,7 +6,7 @@ import Course from "@/components/schedule/Course";
 import { convertPersianNumberToEnglish } from "@/utils/helpers";
 import { weekDays } from "@/constants/const";
 import DeleteCourseDialogConfirmation from "@/components/schedule/DeleteCourseDialogConfirmation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/components/dls/toast/ToastService";
 import Tooltip from "@/components/dls/Tooltip";
 import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
@@ -25,6 +25,9 @@ export default function Schedule() {
   const [courseIdToBeDeleted, setCourseIdToBeDeleted] = useState(null);
   const [tooltipContent, setTooltipContent] = useState(<></>);
   const [tooltipPosition, setTooltipPosition] = useState(null);
+  const scheduleRef = useRef(null);
+  const tooltipRef = useRef(null);
+  const [pendingPosition, setPendingPosition] = useState(null);
 
   const courses = useMemo(() => {
     const schedule = schedules.find((s) => s.id === currentScheduleId);
@@ -72,21 +75,45 @@ export default function Schedule() {
 
   const handleEventMouseEnter = (clickInfo) => {
     const course = clickInfo.event.extendedProps;
-    const rect = clickInfo.el.getBoundingClientRect();
-    const calendarContainer = document.querySelector(".fc");
-    const calendarRect = calendarContainer.getBoundingClientRect();
-    const tooltipX = rect.left - calendarRect.left + window.scrollX - 15;
-    const tooltipY = rect.top - calendarRect.top + window.scrollY;
+    const eventEl = clickInfo.el;
+    const eventRect = eventEl.getBoundingClientRect();
+    const parentRect = scheduleRef.current.getBoundingClientRect();
+    const courseCenterX =
+      eventRect.left - parentRect.left + eventRect.width / 2;
     setTooltipContent(<TooltipContent course={course} inSchedule />);
     setTooltipPosition({
-      left: tooltipX,
-      top: tooltipY,
+      left: courseCenterX - 120,
+      top: eventRect.top - parentRect.top,
+    });
+    setPendingPosition({
+      eventTop: eventRect.top - parentRect.top,
+      courseCenterX,
     });
   };
+
+  useEffect(() => {
+    if (tooltipRef.current && pendingPosition) {
+      const tooltipRect = tooltipRef.current.getBoundingClientRect();
+      const tooltipHeight = tooltipRect.height;
+      const finalTop = pendingPosition.eventTop - tooltipHeight;
+      let finalLeft = pendingPosition.courseCenterX - tooltipRect.width / 2;
+      const parentRect = scheduleRef.current.getBoundingClientRect();
+      finalLeft = Math.max(
+        0,
+        Math.min(finalLeft, parentRect.width - tooltipRect.width),
+      );
+      setTooltipPosition({
+        left: finalLeft,
+        top: finalTop,
+      });
+      setPendingPosition(null);
+    }
+  }, [tooltipContent, pendingPosition]);
 
   const handleEventMouseLeave = (_) => {
     setTooltipContent(<></>);
     setTooltipPosition(null);
+    setPendingPosition(null);
   };
 
   const removeCourse = async () => {
@@ -105,7 +132,7 @@ export default function Schedule() {
   };
 
   return (
-    <div className="relative h-[700px]">
+    <div ref={scheduleRef} className="relative h-[700px]">
       <DeleteCourseDialogConfirmation
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
@@ -173,7 +200,12 @@ export default function Schedule() {
         <DuplicateScheduleButton />
         <DeleteScheduleButton />
       </div>
-      <Tooltip content={tooltipContent} position={tooltipPosition} />
+      <Tooltip
+        ref={tooltipRef}
+        show={!pendingPosition}
+        content={tooltipContent}
+        position={tooltipPosition}
+      />
     </div>
   );
 }
