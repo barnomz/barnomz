@@ -17,7 +17,7 @@ export default function Tooltip({ content, position }) {
   return (
     <div
       ref={tooltipRef}
-      className="fixed z-10 hidden w-[240px] rounded bg-black/75 px-4 py-2 text-xs text-white"
+      className="absolute z-10 hidden w-[240px] rounded bg-black/75 px-4 py-2 text-xs text-white backdrop-blur"
       style={{ pointerEvents: "none" }}
     >
       {content}

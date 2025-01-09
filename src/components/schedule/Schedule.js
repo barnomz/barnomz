@@ -6,7 +6,7 @@ import Course from "@/components/schedule/Course";
 import { convertPersianNumberToEnglish } from "@/utils/helpers";
 import { weekDays } from "@/constants/const";
 import DeleteCourseDialogConfirmation from "@/components/schedule/DeleteCourseDialogConfirmation";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useToast } from "@/components/dls/toast/ToastService";
 import Tooltip from "@/components/dls/Tooltip";
 import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
@@ -25,6 +25,7 @@ export default function Schedule() {
   const [courseIdToBeDeleted, setCourseIdToBeDeleted] = useState(null);
   const [tooltipContent, setTooltipContent] = useState(<></>);
   const [tooltipPosition, setTooltipPosition] = useState(null);
+  const scheduleRef = useRef(null);
 
   const courses = useMemo(() => {
     const schedule = schedules.find((s) => s.id === currentScheduleId);
@@ -72,11 +73,12 @@ export default function Schedule() {
 
   const handleEventMouseEnter = (clickInfo) => {
     const course = clickInfo.event.extendedProps;
-    const rect = clickInfo.el.getBoundingClientRect();
-    const calendarContainer = document.querySelector(".fc");
-    const calendarRect = calendarContainer.getBoundingClientRect();
-    const tooltipX = rect.left - calendarRect.left + window.scrollX - 15;
-    const tooltipY = rect.top - calendarRect.top + window.scrollY;
+    const eventRect = clickInfo.el.getBoundingClientRect();
+    const parentRect = scheduleRef.current.getBoundingClientRect();
+    const tooltipWidth = 240;
+    const margin = 5;
+    const tooltipX = eventRect.left - parentRect.left - tooltipWidth - margin;
+    const tooltipY = eventRect.top - parentRect.top;
     setTooltipContent(<TooltipContent course={course} inSchedule />);
     setTooltipPosition({
       left: tooltipX,
@@ -105,7 +107,7 @@ export default function Schedule() {
   };
 
   return (
-    <div className="relative h-[700px]">
+    <div ref={scheduleRef} className="relative h-[700px]">
       <DeleteCourseDialogConfirmation
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}

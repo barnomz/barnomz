@@ -38,6 +38,9 @@ export default function SchedulesPage({ colleges }) {
               draft[sI].courses[cI] = { ...course, enabled: false };
             }
           });
+          draft[sI].courses = draft[sI].courses.filter(
+            (c) => c.enabled !== false,
+          );
         });
       });
       setCoursesFetched(true);
