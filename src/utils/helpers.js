@@ -50,27 +50,3 @@ function escapeRegex(string) {
 export function normalizeQuery(string) {
   return escapeRegex(string).toLowerCase();
 }
-
-export const getYearAndSemester = () => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth(); // 0-indexed (0 = January, 11 = December)
-  const persianYear = getPersianYear(currentDate);
-  const semester = getSemester(currentMonth);
-  return { year: persianYear, semester };
-};
-
-export const getPersianYear = (date) =>
-  parseInt(
-    convertPersianNumberToEnglish(
-      new Intl.DateTimeFormat("fa-IR", {
-        year: "numeric",
-      }).format(date),
-    ),
-  );
-
-export const getSemester = (month) => {
-  if (month >= 7 && month <= 11) return 1; // Semester 1 (Aug-Dec)
-  if (month >= 0 && month <= 3) return 2; // Semester 2 (Jan-Apr)
-  if (month >= 4 && month <= 5) return 3; // Semester 3 (May-Jun)
-  return 1;
-};
