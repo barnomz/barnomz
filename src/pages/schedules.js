@@ -33,7 +33,8 @@ export default function SchedulesPage({ colleges }) {
               (fc) => fc.id === course.id,
             );
             if (updatedCourse) {
-              draft[sI].courses[cI] = courseMapper(updatedCourse) ?? course;
+              const mappedCourse = courseMapper(updatedCourse);
+              draft[sI].courses[cI] = { ...course, ...mappedCourse };
             } else {
               draft[sI].courses[cI] = { ...course, enabled: false };
             }
