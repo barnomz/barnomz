@@ -15,10 +15,11 @@ export default function ScheduleTabs({ showAddButton = true }) {
     currentScheduleIdAtom,
   );
 
+  const MAX_SCHEDS = 5;
   const createNewSchedule = () => {
-    if (schedules.length >= 5) {
+    if (schedules.length >= MAX_SCHEDS) {
       toast.open({
-        message: "حداکثر ۵ برنامه می‌توانید داشته باشید.",
+        message: "حداکثر " + convertEnglishNumberToPersian(MAX_SCHEDS.toString()) + " برنامه می‌توانید داشته باشید.",
         type: "error",
       });
       return;
@@ -54,7 +55,7 @@ export default function ScheduleTabs({ showAddButton = true }) {
                 )}
               >
                 {"برنامه " +
-                  convertEnglishNumberToPersian((nav.id + 1).toString())}
+                  convertEnglishNumberToPersian((nav.id % MAX_SCHEDS + 1).toString())}
               </button>
             )}
           </Tab>
