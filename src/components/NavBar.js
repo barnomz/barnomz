@@ -1,7 +1,7 @@
 import NavBarMenu from "@/components/NavBarMenu";
 import Link from "next/link";
 import BBtn from "@/components/dls/BBtn";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faGithub, faTelegram } from "@fortawesome/free-brands-svg-icons";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import InfoDialog from "@/components/InfoDialog";
 import { useState } from "react";
@@ -34,6 +34,17 @@ export default function NavBar() {
       </Link>
       <NavBarMenu />
       <div className="flex items-center gap-2">
+        <div className="group relative">
+          <BBtn
+            to="https://t.me/barnomzchie"
+            icon={faTelegram}
+            target="_blank"
+            iconSize="2xl"
+            color="primary"
+            className="!p-2"
+          />
+          {tooltip("کانال تلگرام", "left-[108px]")}
+        </div>
         <div className="group relative">
           <BBtn
             to="https://github.com/barnomz/barnomz"
