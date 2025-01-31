@@ -7,6 +7,7 @@ import messages from "@/constants/messages";
 import { useAtom } from "jotai";
 import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
 import { useImmerAtom } from "jotai-immer";
+import { MAX_SCHEDULES } from "@/constants/const.js";
 
 export default function ScheduleTabs({ showAddButton = true }) {
   const toast = useToast();
@@ -16,17 +17,25 @@ export default function ScheduleTabs({ showAddButton = true }) {
   );
 
   const createNewSchedule = () => {
-    if (schedules.length >= 5) {
+    if (schedules.length >= MAX_SCHEDULES) {
       toast.open({
-        message: "حداکثر ۵ برنامه می‌توانید داشته باشید.",
+        message:
+          "حداکثر " +
+          convertEnglishNumberToPersian(MAX_SCHEDULES.toString()) +
+          " برنامه می‌توانید داشته باشید.",
         type: "error",
       });
       return;
     }
+
     setSchedules((draft) => {
-      const newId =
-        draft.length > 0 ? Math.max(...draft.map((s) => s.id)) + 1 : 0;
+      const existingIds = draft.map((s) => s.id);
+      const newId = Array.from({ length: MAX_SCHEDULES }, (_, i) => i).find(
+        (id) => !existingIds.includes(id),
+      );
+
       draft.push({ id: newId, courses: [] });
+      draft.sort((a, b) => a.id - b.id);
     });
 
     toast.open({
