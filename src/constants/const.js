@@ -1,3 +1,5 @@
+export const MAX_SCHEDULES = 5;
+
 export const persianNumbers = [
   "۰",
   "۱",
