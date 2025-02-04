@@ -68,7 +68,7 @@ export default function ExamsTable() {
   };
 
   const totalCreditSum = courses
-    .filter((c) => !c.mode)
+    .filter((c) => c.mode !== "hover")
     .reduce((sum, { unitCount }) => sum + Number(unitCount), 0);
 
   return (
