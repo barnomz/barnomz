@@ -31,7 +31,7 @@ export default function CourseSelector({ colleges, mode = "search" }) {
   }, [schedules, currentScheduleId]);
 
   const totalCreditSum = courses
-    .filter((c) => !c.mode)
+    .filter((c) => c.mode !== "hover")
     .reduce((sum, { unitCount }) => sum + Number(unitCount), 0);
 
   const {
@@ -79,7 +79,7 @@ export default function CourseSelector({ colleges, mode = "search" }) {
       if (!schedule) return;
 
       const courseInSchedule = schedule.courses.find((c) => c.id === course.id);
-      if (!courseInSchedule || !courseInSchedule.mode) return;
+      if (!courseInSchedule || courseInSchedule.mode !== "hover") return;
 
       delete courseInSchedule.mode;
     });
@@ -88,7 +88,13 @@ export default function CourseSelector({ colleges, mode = "search" }) {
   const addCourseAsHover = (course) => {
     setSchedules((draft) => {
       const schedule = draft.find((s) => s.id === currentScheduleId);
-      if (!schedule || schedule.courses.some((c) => c.id === course.id)) return;
+      if (!schedule) return;
+
+      const scheduledCourse = schedule.courses.find((c) => c.id === course.id)
+      if (scheduledCourse) {
+        scheduledCourse.mode = "both"
+        return;
+      }
 
       schedule.courses.push({ ...course, mode: "hover" });
     });
@@ -99,6 +105,7 @@ export default function CourseSelector({ colleges, mode = "search" }) {
       const schedule = draft.find((s) => s.id === currentScheduleId);
       if (!schedule) return;
       const courseInSchedule = schedule.courses.find((c) => c.id === course.id);
+      if (courseInSchedule.mode === "both") delete courseInSchedule.mode;
       if (courseInSchedule.mode !== "hover") return;
 
       schedule.courses = schedule.courses.filter((c) => c.id !== course.id);

@@ -12,11 +12,11 @@ const TooltipContent = ({ course, inSchedule = false }) => {
   }, [schedules, currentScheduleId]);
 
   const isInSchedule = courses
-    .filter((c) => !c.mode)
+    .filter((c) => c.mode !== "hover")
     .find((c) => c.id === course.id);
 
   const examConflict = courses
-    .filter((c) => !c.mode)
+    .filter((c) => c.mode !== "hover")
     .some(
       (c) =>
         !!c.finalExamDate &&
