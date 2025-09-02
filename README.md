@@ -27,3 +27,8 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+## Export/Import Schedules
+
+- Export: On the schedules page, use the JSON export button near the bottom-left action buttons. It always exports all schedules to a `.json` file containing `schedules` and `currentScheduleId`.
+- Import: Use the JSON import button, pick a valid `.json` file, then choose to “Append to existing” or “Replace all”. The app validates structure and enforces the maximum number of schedules.
