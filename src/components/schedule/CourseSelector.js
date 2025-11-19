@@ -62,12 +62,16 @@ export default function CourseSelector({ colleges, mode = "search" }) {
   const filteredCourses =
     normalizedQuery === ""
       ? coursesOfColleges
-      : coursesOfColleges.filter(
-          (course) =>
-            course.courseCode.match(normalizedQuery) ||
-            course.normalizedCourseName.match(normalizedQuery) ||
-            course.presentedBy.match(normalizedQuery),
-        );
+      : coursesOfColleges.filter((course) => {
+          const normalizedCourseCode = course.courseCode.toLowerCase();
+          const normalizedPresentedBy = course.presentedBy.toLowerCase();
+
+          return (
+            normalizedCourseCode.includes(normalizedQuery) ||
+            course.normalizedCourseName.includes(normalizedQuery) ||
+            normalizedPresentedBy.includes(normalizedQuery)
+          );
+        });
 
   const handleFetchCollegeCourses = async (college) => {
     setSelectedCollege(college);

@@ -5,6 +5,7 @@ import {
   faCheck,
   faChevronCircleDown,
 } from "@fortawesome/free-solid-svg-icons";
+import { normalizeQuery } from "@/utils/helpers";
 
 export default function CollegeCombobox({
   colleges,
@@ -13,10 +14,14 @@ export default function CollegeCombobox({
 }) {
   const [query, setQuery] = useState("");
 
+  const normalizedQuery = normalizeQuery(query);
+
   const filteredColleges =
-    query === ""
+    normalizedQuery === ""
       ? colleges
-      : colleges.filter((college) => college.name.match(query));
+      : colleges.filter((college) =>
+          normalizeQuery(college?.name ?? "").includes(normalizedQuery),
+        );
 
   const handleSelect = (college) => {
     onSelect(college);
