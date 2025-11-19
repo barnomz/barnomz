@@ -14,6 +14,7 @@ import { useAtomValue } from "jotai";
 import { useImmerAtom } from "jotai-immer";
 import TooltipContent from "@/components/schedule/TooltipContent";
 import ExportScheduleImageButton from "@/components/schedule/ExportScheduleImageButton";
+import ExportScheduleCalendarButton from "@/components/schedule/ExportScheduleCalendarButton";
 import ExportSchedulesButton from "@/components/schedule/ExportSchedulesButton";
 import ImportSchedulesButton from "@/components/schedule/ImportSchedulesButton";
 import DuplicateScheduleButton from "@/components/schedule/DuplicateScheduleButton";
@@ -173,6 +174,7 @@ export default function Schedule() {
       />
 
       <div className="fixed bottom-5 left-4 z-50 flex items-center gap-2">
+        <ExportScheduleCalendarButton />
         <ExportScheduleImageButton />
         <DuplicateScheduleButton />
         <DeleteScheduleButton />
