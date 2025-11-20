@@ -1,7 +1,21 @@
+import moment from "moment-jalaali";
+
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 const SIX_MONTH_DAYS = 180;
+const DEFAULT_EXAM_DURATION_MINUTES = 120;
 
 const formatNumber = (value) => String(value).padStart(2, "0");
+
+const normalizeTextKey = (value) => {
+  if (typeof value !== "string") return value;
+  return value.trim().replace(/\s+/g, " ");
+};
+
+export const getCourseKey = (course, fallback) => {
+  if (!course) return fallback;
+  const rawKey = course.id ?? course.courseCode ?? course.courseName ?? fallback;
+  return normalizeTextKey(rawKey);
+};
 
 const formatDateLocal = (date) => {
   return (
@@ -34,6 +48,14 @@ const escapeText = (value = "") => {
     .replace(/\n/g, "\\n")
     .replace(/,/g, "\\,")
     .replace(/;/g, "\\;");
+};
+
+const convertJalaliDateTimeToDate = (dateString, timeString) => {
+  if (!dateString || !timeString) return null;
+  const jalaliDateTimeString = `${dateString} ${timeString}`;
+  const jalaliMoment = moment(jalaliDateTimeString, "jYYYY/jMM/jDD HH:mm");
+  if (!jalaliMoment.isValid()) return null;
+  return jalaliMoment.toDate();
 };
 
 const parseTime = (timeString) => {
@@ -123,16 +145,19 @@ export const buildRecurringEventsFromSchedule = (
 
   const events = [];
 
-  courses.forEach((course) => {
+  courses.forEach((course, courseIndex) => {
     if (!course?.sessions?.length) return;
+
+    const courseKey = getCourseKey(course, courseIndex);
 
     course.sessions.forEach((session, index) => {
       const occurrence = getFirstOccurrenceDates(session, referenceDate);
       if (!occurrence) return;
 
       events.push({
+        courseKey,
         uid:
-          `${course.id ?? "course"}-${session.dayOfWeek}-${session.startTime}-${index}-${occurrence.startDate.getTime()}`,
+          `${courseKey}-${session.dayOfWeek}-${session.startTime}-${index}-${occurrence.startDate.getTime()}`,
         summary: course.courseName || "Course",
         description: buildDescription(course),
         location: course.location || course.locationName || "",
@@ -144,6 +169,57 @@ export const buildRecurringEventsFromSchedule = (
   });
 
   return events;
+};
+
+export const buildExamEventsFromSchedule = (
+  courses = [],
+  durationMinutes = DEFAULT_EXAM_DURATION_MINUTES,
+) => {
+  if (!Array.isArray(courses) || !courses.length) {
+    return [];
+  }
+
+  const seenExams = new Set();
+
+  return courses
+    .map((course, index) => {
+      if (course?.mode === "hover") return null;
+      if (course?.enabled === false) return null;
+
+      const examDate = course?.finalExamDate?.trim?.();
+      const examTime = course?.finalExamTime?.trim?.();
+
+      if (!examDate || !examTime) return null;
+
+      const startDate = convertJalaliDateTimeToDate(examDate, examTime);
+
+      if (!startDate) return null;
+
+      const courseKey = getCourseKey(course, index);
+      const dedupeKey = [
+        normalizeTextKey(course?.courseName) || courseKey || "course",
+        examDate,
+        examTime,
+      ]
+        .filter(Boolean)
+        .join("|");
+
+      if (seenExams.has(dedupeKey)) return null;
+      seenExams.add(dedupeKey);
+
+      const endDate = new Date(startDate);
+      endDate.setMinutes(endDate.getMinutes() + durationMinutes);
+
+      return {
+        uid: `${course.id ?? "course"}-exam-${index}-${startDate.getTime()}`,
+        summary: `${course.courseName || "Course"} - امتحان`,
+        description: buildDescription(course),
+        location: course.location || course.locationName || "",
+        startDate,
+        endDate,
+      };
+    })
+    .filter(Boolean);
 };
 
 export const generateICS = (events = [], timezone) => {
@@ -175,7 +251,9 @@ export const generateICS = (events = [], timezone) => {
     }
     lines.push(`DTSTART;TZID=${tz}:${formatDateLocal(event.startDate)}`);
     lines.push(`DTEND;TZID=${tz}:${formatDateLocal(event.endDate)}`);
-    lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${formatDateUTC(event.until)}`);
+    if (event.until) {
+      lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${formatDateUTC(event.until)}`);
+    }
     lines.push("END:VEVENT");
   });
 

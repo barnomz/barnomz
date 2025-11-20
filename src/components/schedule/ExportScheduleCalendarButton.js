@@ -5,8 +5,10 @@ import { faCalendarPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { currentScheduleIdAtom, schedulesAtom } from "@/atoms";
 import { useToast } from "@/components/dls/toast/ToastService";
 import {
+  buildExamEventsFromSchedule,
   buildRecurringEventsFromSchedule,
   generateICS,
+  getCourseKey,
   triggerICSDownload,
 } from "@/utils/ics";
 
@@ -16,13 +18,29 @@ const ExportScheduleCalendarButton = () => {
   const currentScheduleId = useAtomValue(currentScheduleIdAtom);
   const [isExporting, setIsExporting] = useState(false);
 
+  const hasExamDateTime = useCallback((course) => {
+    const examDate = course?.finalExamDate?.trim?.();
+    const examTime = course?.finalExamTime?.trim?.();
+    return Boolean(examDate && examTime);
+  }, []);
+
   const currentCourses = useMemo(() => {
     const schedule = schedules.find((s) => s.id === currentScheduleId);
     if (!schedule) return [];
-    return schedule.courses.filter(
-      (course) => typeof course.enabled === "undefined" || course.enabled !== false,
+    const filteredCourses = schedule.courses.filter(
+      (course) =>
+        (typeof course.enabled === "undefined" || course.enabled !== false) &&
+        course.mode !== "hover",
     );
-  }, [currentScheduleId, schedules]);
+
+    const seenCourses = new Set();
+    return filteredCourses.filter((course, index) => {
+      const key = getCourseKey(course, index);
+      if (seenCourses.has(key)) return false;
+      seenCourses.add(key);
+      return true;
+    });
+  }, [currentScheduleId, getCourseKey, schedules]);
 
   const buildFileToken = () => {
     const now = new Date();
@@ -47,13 +65,36 @@ const ExportScheduleCalendarButton = () => {
       setIsExporting(true);
       const timezone =
         Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-      const events = buildRecurringEventsFromSchedule(currentCourses);
+      const recurringEvents = buildRecurringEventsFromSchedule(currentCourses);
+      const recurringCourseKeys = new Set(
+        recurringEvents.map((event) => event.courseKey).filter(Boolean),
+      );
+      const coursesWithExamDateTime = currentCourses.filter((course) => {
+        if (!hasExamDateTime(course)) return false;
+        if (!recurringCourseKeys.size) return true;
+        return recurringCourseKeys.has(getCourseKey(course));
+      });
+      const incompleteExamInfoCourses = currentCourses.filter(
+        (course) =>
+          !hasExamDateTime(course) &&
+          (course.finalExamDate || course.finalExamTime),
+      );
+      const examEvents = buildExamEventsFromSchedule(coursesWithExamDateTime);
+      const events = [...recurringEvents, ...examEvents];
+
       if (!events.length) {
         toast.open({ message: "رویدادی برای خروجی موجود نیست.", type: "warning" });
         return;
       }
       const ics = generateICS(events, timezone);
       triggerICSDownload(`barnomz-schedule-${buildFileToken()}.ics`, ics);
+      if (incompleteExamInfoCourses.length) {
+        toast.open({
+          message:
+            "برخی دروس به دلیل نداشتن تاریخ یا زمان امتحان در خروجی قرار نگرفتند.",
+          type: "warning",
+        });
+      }
       toast.open({ message: "فایل تقویم ساخته شد.", type: "success" });
     } catch (error) {
       console.error(error);
@@ -61,7 +102,7 @@ const ExportScheduleCalendarButton = () => {
     } finally {
       setIsExporting(false);
     }
-  }, [currentCourses, toast]);
+  }, [currentCourses, hasExamDateTime, toast]);
 
   return (
     <div className="group relative">
