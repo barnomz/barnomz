@@ -43,10 +43,8 @@ export function isMobileOrTablet(userAgent) {
   };
 }
 
-function escapeRegex(string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 export function normalizeQuery(string) {
-  return escapeRegex(string).toLowerCase();
+  if (typeof string !== "string") return "";
+
+  return string.toLowerCase();
 }
