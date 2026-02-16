@@ -50,6 +50,12 @@ const TooltipContent = ({ course, inSchedule = false }) => {
       className: "",
     },
     {
+      label: "تعداد واحد",
+      value: course.unitCount,
+      enabled: true,
+      className: "",
+    }
+    {
       label: "ظرفیت",
       value: course.numberOfCapacity,
       enabled: true,
