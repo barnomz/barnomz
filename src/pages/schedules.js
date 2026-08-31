@@ -58,7 +58,7 @@ export default function SchedulesPage({ colleges }) {
           <div className="flex grow flex-col justify-between rounded-xl bg-primary/50 p-4 backdrop-blur">
             <h1 className="text-2xl font-bold">برنامه هفتگی کلاس‌ها</h1>
             <ScheduleTabs />
-            <Schedule />
+            <Schedule colleges={colleges} />
           </div>
           <CourseSelector colleges={colleges} />
         </div>

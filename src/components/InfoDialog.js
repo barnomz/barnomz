@@ -74,6 +74,7 @@ export default function InfoDialog({ isOpen, onClose }) {
                       <li>مهدی سعادت بخت</li>
                       <li>هیربد بهنام</li>
                       <li>سهیل نظری</li>
+                      <li>نیما شیرزادی</li>
                     </ul>
                   </div>
                   <div className="rounded-lg border border-white/10 bg-white/5 p-3">

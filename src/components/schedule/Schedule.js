@@ -19,8 +19,9 @@ import ExportSchedulesButton from "@/components/schedule/ExportSchedulesButton";
 import ImportSchedulesButton from "@/components/schedule/ImportSchedulesButton";
 import DuplicateScheduleButton from "@/components/schedule/DuplicateScheduleButton";
 import DeleteScheduleButton from "@/components/schedule/DeleteScheduleButton";
+import AutoScheduleButton from "@/components/schedule/AutoScheduleButton";
 
-export default function Schedule() {
+export default function Schedule({ colleges }) {
   const toast = useToast();
   const [schedules, setSchedules] = useImmerAtom(schedulesAtom);
   const currentScheduleId = useAtomValue(currentScheduleIdAtom);
@@ -174,6 +175,7 @@ export default function Schedule() {
       />
 
       <div className="fixed bottom-5 left-4 z-50 flex items-center gap-2">
+        <AutoScheduleButton colleges={colleges} />
         <ExportScheduleCalendarButton />
         <ExportScheduleImageButton />
         <DuplicateScheduleButton />
