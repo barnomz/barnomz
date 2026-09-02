@@ -109,6 +109,7 @@ export default function CourseSelector({ colleges, mode = "search" }) {
       const schedule = draft.find((s) => s.id === currentScheduleId);
       if (!schedule) return;
       const courseInSchedule = schedule.courses.find((c) => c.id === course.id);
+      if (!courseInSchedule) return;
       if (courseInSchedule.mode === "both") delete courseInSchedule.mode;
       if (courseInSchedule.mode !== "hover") return;
 

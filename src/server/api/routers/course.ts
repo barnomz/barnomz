@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { serializeCourses } from "@/server/api/serialize";
 
 export const courseRouter = createTRPCRouter({
   getCoursesByIds: publicProcedure
@@ -33,13 +34,6 @@ export const courseRouter = createTRPCRouter({
         },
       });
 
-      return courses.map((course) => ({
-        ...course,
-        id: Number(course.id),
-        courseSessions: course.courseSessions.map((session) => ({
-          ...session,
-          courseId: Number(session.courseId),
-        })),
-      }));
+      return serializeCourses(courses);
     }),
 });
