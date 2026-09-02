@@ -30,6 +30,26 @@ type Course = {
 
 type CoursesResponse = Record<string, Course>;
 
+// {year:4}{semester:1}{courseCode:7}{group:2}{unitCount:1}
+// year 1403, semester 1, code 40424, group 1, units 3 => 140310040424013
+const buildCourseId = (
+  courseCode: string,
+  group: number,
+  unitCount: number,
+  year: number,
+  semester: number,
+): bigint => {
+  const code = Number(courseCode);
+  if (!Number.isSafeInteger(code) || code < 0 || code >= 1e7) {
+    throw new Error(`Unsupported course code: ${courseCode}`);
+  }
+  if (group < 0 || group > 99) throw new Error(`Unsupported group: ${group}`);
+  if (unitCount < 0 || unitCount > 9) throw new Error(`Unsupported units: ${unitCount}`);
+  if (year < 0 || year > 9999) throw new Error(`Unsupported year: ${year}`);
+  if (semester < 0 || semester > 9) throw new Error(`Unsupported semester: ${semester}`);
+  return BigInt((((year * 10 + semester) * 10000000 + code) * 100 + group) * 10 + unitCount);
+};
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -85,7 +105,16 @@ export const populate = async (): Promise<boolean> => {
       }
 
       // Step 5: Create or update the Course
-      const course = await db.course.upsert({
+      const courseId = buildCourseId(
+        courseCode,
+        courseData.Group,
+        courseData.Units,
+        courseData.Year,
+        courseData.Semester,
+      );
+
+      // Find and drop stale row if exists
+      const existingCourse = await db.course.findUnique({
         where: {
           courseCode_group_year_semester: {
             courseCode: courseCode,
@@ -94,6 +123,13 @@ export const populate = async (): Promise<boolean> => {
             semester: courseData.Semester,
           },
         },
+      });
+      if (existingCourse && existingCourse.id !== courseId) {
+        await db.course.delete({ where: { id: existingCourse.id } });
+      }
+
+      const course = await db.course.upsert({
+        where: { id: courseId },
         update: {
           courseName: courseData.Name,
           unitCount: courseData.Units,
@@ -108,6 +144,7 @@ export const populate = async (): Promise<boolean> => {
           grade: courseData.Grade,
         },
         create: {
+          id: courseId,
           courseCode: courseCode,
           courseName: courseData.Name,
           unitCount: courseData.Units,
