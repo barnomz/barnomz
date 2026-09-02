@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { serializeCourses } from "@/server/api/serialize";
 
 export const collegeRouter = createTRPCRouter({
   getAllDepartments: publicProcedure.query(async ({ ctx }) => {
@@ -23,7 +24,7 @@ export const collegeRouter = createTRPCRouter({
 
       const { year, semester } = result;
 
-      return ctx.db.course.findMany({
+      const courses = await ctx.db.course.findMany({
         where: {
           departmentId: input.departmentCode,
           year,
@@ -34,5 +35,7 @@ export const collegeRouter = createTRPCRouter({
           courseSessions: true,
         },
       });
+
+      return serializeCourses(courses);
     }),
 });
