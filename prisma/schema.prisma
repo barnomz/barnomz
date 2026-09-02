@@ -29,7 +29,7 @@ model Professor {
 }
 
 model Course {
-    id                   Int            @id @default(autoincrement())
+    id                   BigInt         @id
     courseName           String
     courseCode           String
     unitCount            Int
@@ -60,8 +60,8 @@ model Course {
 
 model CourseSession {
     id         Int     @id @default(autoincrement())
-    courseId   Int
-    course     Course  @relation(fields: [courseId], references: [id])
+    courseId   BigInt
+    course     Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
     dayOfWeek  Int
     startTime  String
     endTime    String

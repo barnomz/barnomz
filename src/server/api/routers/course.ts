@@ -3,7 +3,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 export const courseRouter = createTRPCRouter({
   getCoursesByIds: publicProcedure
-    .input(z.object({ courseIds: z.array(z.number()) }))
+    .input(z.object({ courseIds: z.array(z.number().int()) }))
     .query(async ({ ctx, input }) => {
       const result = await ctx.db.course.findFirst({
         select: {
@@ -19,10 +19,10 @@ export const courseRouter = createTRPCRouter({
 
       const { year, semester } = result;
 
-      return ctx.db.course.findMany({
+      const courses = await ctx.db.course.findMany({
         where: {
           id: {
-            in: input.courseIds,
+            in: input.courseIds.map((id) => BigInt(id)),
           },
           year,
           semester,
@@ -32,5 +32,14 @@ export const courseRouter = createTRPCRouter({
           courseSessions: true,
         },
       });
+
+      return courses.map((course) => ({
+        ...course,
+        id: Number(course.id),
+        courseSessions: course.courseSessions.map((session) => ({
+          ...session,
+          courseId: Number(session.courseId),
+        })),
+      }));
     }),
 });
